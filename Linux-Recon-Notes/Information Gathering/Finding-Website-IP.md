@@ -15,7 +15,8 @@ Cyber Security aur Red Teaming (Information Gathering) ke dauran, kisi bhi targe
 ```
 
 
-Why it's used:** Yeh aik line mein domain ka IPv4, IPv6 aur Mail Servers (MX records) nikaal kar de deti hai.
+Why it's used:
+**Yeh aik line mein domain ka IPv4, IPv6 aur Mail Servers (MX records) nikaal kar de deti hai.**
 
 ### 2. `dig` (Domain Information Groper)
 
@@ -90,7 +91,7 @@ curl -I [https://kali.org](https://kali.org)
 ## 🎯 Summary Table for Quick Reference
 
 | Command | Primary Purpose (Asal Kaam) | Output Depth (Detail) | Best Use Case |
-| --- | --- | --- | --- |
+| :--- | :--- | :--- | :--- |
 | **`host`** | Quick IP Lookup | Low (To the point) | Jab jaldi se sirf IP dekhna ho |
 | **`dig`** | Advanced DNS Query | High (Detailed sections) | **Industry Standard** for Recon |
 | **`nslookup`** | Basic DNS Query | Medium | Cross-platform (Windows/Linux) |
