@@ -109,6 +109,9 @@
    
    ```
    *(PID number aap ko process shuru karte waqt ya ps command se milta hai).*
+
+---
+
 ### 10. history
  * **Detail Usage:** Aap ne terminal par shuru se ab tak jitni bhi commands chalayi hain, yeh un ki poori list number ke sath dikha deta hai.
  * **Web Security / Pentesting Use:** Pentesting ke aakhri mein report banate waqt hacker check karta hai ke us ne kaun kaun si commands chalayi thin taake woh client ko bata sake.
@@ -119,3 +122,117 @@
    ```
 ---
 
+### 11. grep (Global Regular Expression Print)
+ * **Detail Usage:** Yeh Linux ka built-in search engine hai. Is ka kaam kisi file ke andar se ya kisi doosri command ke output mein se aap ka bataya hua specific word ya pattern dhoond kar nikalna hai.
+ * **Web Security / Pentesting Use:** Jab aap kisi website ki JavaScript files scan karte hain aur un mein se sensitive information jaise "API_KEY", "token", ya "admin_url" dhoondna chahte hain, to hazaron lines ka code manually parhne ke bajaye grep chalaya jata hai.
+ * **Important Flags:**
+   * -i: Ignore Case (Yani bade aur chote letters ka farq khatam kar deta hai. grep -i "admin" karne se Admin aur ADMIN sab samne aa jayenge).
+   * -r: Recursive (Poore folder aur us ke andar ke saare sub-folders mein dhoondne ke liye).
+   * -v: Invert Match (Jo word aap ne likha, us ke alawa baqi saara data dikhayega).
+ * **How to run:**
+   ```bash
+   grep -i "api_key" configuration.js
+   
+   ```
+---
+
+### 12. sort
+ * **Detail Usage:** Yeh kisi bhi file ke data ko ya doosri command ke output ko alphabetically (A to Z) ya numerically ek tarteeb (order) mein le aata hai.
+ * **Web Security / Pentesting Use:** Jab aap Bug Bounty ke doran kisi website ke hazaron subdomains nikalte hain (jaise Subfinder tool se), to un subdomains ki list ko ek proper order mein laane ke liye sort use hota hai taake analyze karna aasan ho.
+ * **How to run:**
+   ```bash
+   sort subdomains.txt
+   
+   ```
+
+---
+
+### 13. uniq (Unique)
+ * **Detail Usage:** Yeh data mein se duplicate lines (jo baar baar aa rahi hon) unhein mita deta hai aur sirf single unique copy rakhta hai.
+ * **CRITICAL RULE (Jo aap se galti hui thi):** uniq command poori file mein door door pari duplicate lines ko nahi pehchanti. Yeh sirf tab kaam karti hai jab duplicate lines aik doosre ke bilkul upar-neeche (adjacent) hon. Is liye isay hamesha sort ke sath pipe (|) kar ke chalaya jata hai.
+ * **Important Flags:**
+   * -i: Case-insensitive (Yani Abd.com aur abd.com ka farq mita kar unhein duplicate samjhega aur ek ko delete kar dega).
+   * -c: Count (Yeh batata hai ke kaun si line file mein kitni baar aayi thi).
+ * **How to run:**
+   ```bash
+   sort sorttest.txt | uniq -i
+   
+   ```
+
+---
+
+### 14. awk
+ * **Detail Usage:** Yeh Linux ka ek bohot hi powerful data manipulation tool hai jo text ko columns (hissoun) mein torta hai. Default tor par yeh spaces ya tabs ko dekh kar columns banata hai.
+ * **Web Security / Pentesting Use:** Maan lein aap ne Nmap chalaya aur line aayi: 80/tcp open http. Aap ko is poori line mein se sirf port number (80/tcp) chahiye, baqi text nahi chahiye script ke liye. To aap awk se pehla column print karwa lete hain.
+ * **How to run:**
+   ```bash
+   echo "80/tcp open http" | awk '{print $1}'
+   
+   ```
+   *(Yahan $1 ka matlab pehla column hai. Agar $3 likhenge to http print hoga).*
+
+---
+
+### 15. chmod (Change Mode)
+ * **Detail Usage:** Yeh kisi bhi file ya folder ki permissions (Read r, Write w, Execute x) ko badalne ke liye hota hai. Linux mein har permission ka ek number hota hai: Read=4, Write=2, Execute=1. (4+2+1 = 7, yaani Full Control).
+ * **Web Security / Pentesting Use:** Jab aap GitHub se koi exploit script (jaise exploit.sh ya reverse_shell.py) download karte hain, to Linux use execute karne nahi deta aur "Permission Denied" ka error deta hai. Aap ko use chalane ke liye execution access dena parta hai.
+ * **How to run:**
+   ```bash
+   chmod +x exploit.sh
+   
+   ```
+   *(Ya full access ke liye jo aap ne chalaya: chmod 777 latest.tar.gz)*
+
+---
+
+### 16. chown (Change Owner)
+ * **Detail Usage:** Yeh file ya folder ka asal maalik (User) ya us ka Group badalne ke liye istamal hota hai. Is command ko chalane ke liye hamesha sudo (root power) chahiye hoti hai.
+ * **Web Security / Pentesting Use:** Kuch sensitive security tools ya system logs sirf root user hi read/write kar sakta hai. Agar aap ne normal user mein koi reverse shell script banayi hai aur aap chahte hain ke system use admin level par treat kare, to aap ownership change karte hain.
+ * **How to run:**
+   ```bash
+   sudo chown root latest.tar.gz
+   
+   ```
+   *(Is se file ka owner habib se badal kar root ho jata hai).*
+
+---
+
+### 17. curl (Client URL)
+ * **Detail Usage:** Yeh terminal ka apna "Web Browser" hai. Yeh bina koi GUI browser (Chrome/Firefox) khole, direct terminal se kisi bhi website ya web server ko HTTP requests bhejta hai aur us ka response fetch karta hai.
+ * **Web Security / Pentesting Use:** Website ke background status codes (200 OK, 403 Forbidden, 302 Redirect) check karne ke liye, custom HTTP Headers dekhne ke liye, ya direct exploit payloads website par test karne ke liye.
+ * **Important Flags:**
+   * -I: Fetch headers only (Website ka poora HTML code nahi dikhayega, sirf oper ka security data aur server name dikhayega).
+   * -X: Request method badalna (Jaise POST, PUT, DELETE requests bhejna API testing mein).
+ * **How to run:**
+   ```bash
+   curl -I https://google.com
+   
+   ```
+
+---
+
+### 18. wget
+ * **Detail Usage:** Yeh terminal ka "Download Manager" hai jo internet se direct links ke zariye files, tools, ya archives download karta hai.
+ * **Common Mistakes & Fixes (Jo aap se galti hui thi):** Jab link ke andar & ya ? jaise special characters hon, to Zsh terminal parse error de deta hai kyun ke & ka matlab background process hota hai Linux mein.
+   * **Fix:** Hamesha poore link ko **Double Quotes ""** ke andar band kar ke chalayein.
+ * **Important Flags:**
+   * -O (Capital O): File ka naam apni marzi se chota rakhne ke liye download karte waqt.
+ * **How to run:**
+   ```bash
+   wget -O picture.jpg "https://cdn.sanity.io/images/...&w=1351"
+   
+   ```
+
+---
+
+### 19. ping
+ * **Detail Usage:** Yeh check karta hai ke target website ya server internet par active (online) hai ya nahi. Yeh ICMP packets bhejta hai aur wapas aane ka waqt check karta hai.
+ * **Web Security / Pentesting Use:** Kisi bhi website ka real IP address maloom karne ke liye ya yeh check karne ke liye ke target machine ke sath aap ka networking connection block to nahi ho raha.
+ * **Important Flags:**
+   * -c: Count (Linux default mein lagatar ping karta rehta hai, use rokhne ke liye limit lagate hain).
+ * **How to run:**
+   ```bash
+   ping -c 4 google.com
+   
+   ```
+---
