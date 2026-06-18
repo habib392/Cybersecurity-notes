@@ -236,3 +236,83 @@
    
    ```
 ---
+
+### 20. ifconfig / ip a
+ * **Detail Usage:** Yeh aap ke computer ke saare network interfaces (Wi-Fi cards, Ethernet ports, VPN tunnels) ki networking configuration aur aap ka **IP Address** dikhati hai. (ip a naya aur modern tarika hai).
+ * **Web Security / Pentesting Use:** Jab aap TryHackMe ya HackTheBox ki labs par hacking practice karte hain, to aap un ke network se connect hone ke liye OpenVPN chalate hain. VPN se connect hone ke baad aap ko apna internal IP address (tun0 interface par) dekhna hota hai, taake jab aap website par attack karein to website ko bata sakein ke reverse shell connection wapas kis IP par bhejna hai.
+ * **How to run:**
+   ```bash
+   ip a
+   
+   ```
+
+---
+
+### 21. ss / netstat
+ * **Detail Usage:** Yeh command aap ke operating system par chalne wale saare active network connections aur open ports ki list dikhati hai. (ss command netstat ka fast aur modern alternative hai).
+ * **Web Security / Pentesting Use:** Jab aap kisi target website par exploit chalate hain aur apne Kali Linux computer par connection wapas lene ke liye Port listen karte hain (jaise Netcat nc -lvnp 4444 se), to aap check karne ke liye ss chalate hain ke kya aap ki port waqai background mein open ho kar listening mode mein aa gayi hai ya nahi.
+ * **Important Flags:**
+   * -tulpn: ( -t tcp ports, -u udp ports, -l listening ports, -p process name, -n numerical addresses). Yeh flag sab se zyada use hota hai.
+ * **How to run:**
+   ```bash
+   ss -tulpn
+   
+   ```
+
+---
+
+### 22. find
+ * **Detail Usage:** Yeh poore Linux system ke andar se files aur folders ko un ke naam, size, type, ya permissions ke hisab se dhoondne ke liye deep scanning karti hai.
+ * **Web Security / Pentesting Use:** Jab aap kisi website ke server par access hasil kar lete hain, to aap ka agla maqsad admin/root banna hota hai (Privilege Escalation). Us ke liye aap pooray system mein aisi sensitive files dhoondte hain jin mein passwords ya database credentials likhe hon, ya phir aisi scripts jin par galat permissions set hon.
+ * **How to run:**
+   ```bash
+   find . -name "sorttest.txt"
+   
+   ```
+   * **Pro Tip (Error Hiding):** System wide search karte waqt hazaron "Permission Denied" errors aate hain. Unhein chupane ke liye aage 2>/dev/null lagaya jata hai:
+   ```bash
+   find / -name "config.php" 2>/dev/null
+   
+   ```
+
+---
+
+### 23. locate
+ * **Detail Usage:** Yeh bhi computer mein files dhoondti hai, lekin find command se **100 gunah tezi se**, kyun ke yeh poore hard drive ko scan nahi karti balkay apni pehle se bani hui database file mein se search karti hai.
+ * **CRITICAL RULE (Jo aap se galti hui thi):** Agar aap ne nano se abhi koi nayi file banayi hai, to locate use nahi dhoond payega kyun ke us ki database default mein rozana ya hafte baad update hoti hai.
+   * **Fix:** Database ko manually force update karne ke liye pehle sudo updatedb chalayein, phir locate chalayein.
+ * **How to run:**
+   ```bash
+   sudo updatedb
+   locate rockyou.txt
+   
+   ```
+
+---
+
+### 24. tar / zip
+ * **Detail Usage:** Hazaron files ko mila kar ek single file (Archive) banana, data ka size compress (chota) karna, ya internet se download ki gayi .tar.gz aur .zip files ko extract (unzip) karna.
+ * **Web Security / Pentesting Use:** 1. **Exfiltration Phase:** Jab aap website ke server se sensitive logs ya source code chori karte hain, to hazaron files aik aik kar ke download nahi ki jatin. Aap server ke andar hi un saari files ka ek .zip ya .tar.gz archive banate hain aur ek baar mein baahar nikalte hain.
+   2. **Exploit Extraction:** WordPress ya kisi bhi web app ka source code testing ke liye hamesha .tar.gz mein aata hai, usay kholne ke liye yeh use hota hai.
+ * **Important Flags for tar:**
+   * -x: Extract (kholo)
+   * -v: Verbose (screen par dikhao kya nikal raha hai)
+   * -f: File (file ka naam batao)
+   * -z: Gzip format ko handle karo
+ * **How to run:**
+   ```bash
+   tar -xzvf latest.tar.gz
+   
+   ```
+
+---
+
+### 25. ssh (Secure Shell)
+ * **Detail Usage:** Yeh ek intehai secure protocol aur command hai jis se aap duniya ke kisi bhi kone mein baithay Linux server ka terminal/shell apne computer par encrypted form mein open kar ke use control kar sakte hain.
+ * **Web Security / Pentesting Use:** Agar aap ko website testing ke doran configuration files ya database mein se kisi real user ya admin ke SSH credentials (username aur password/SSH key) mil jayein, to aap browser chor kar direct ssh ke zariye us server ke main terminal par daakhil ho jate hain aur poora control hasil kar lete hain.
+ * **How to run:**
+   ```bash
+   ssh username@target_ip_address
+   
+   ```
+   *(Aap ne ssh localhost chalaya tha aur Connection refused aaya tha, kyun ke aap ke Kali mein default tor par SSH service temporary stop hoti hai, jo ke normal baat hai).*
