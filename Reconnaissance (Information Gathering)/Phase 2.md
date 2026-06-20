@@ -541,3 +541,104 @@ Hamare target par Gravity Forms ka version **`2.10.1`** chal raha hai. Chunke `1
 Lekin iska yeh matlab hargiz nahi ke website bilkul safe hai. `searchsploit` sirf un exploits ko dikhata hai jo bade public text ya script files ki surat mein save hain. Google aur CVE databases par aksar aisi vulnerabilities hoti hain jin ke sirf proof-of-concept (PoC) likhe hote hain.
 
 ---
+
+### 🚀 Ab Agla Logical Kadam (Next Step) Kya Hoga?
+
+Chunke public exploits mein hamare version ka direct script nahi mila, ab hum wapas apne scanning aur enumeration ke raste par aayenge jo hamara adhura reh gaya tha.
+
+Yaad hai jab hum ne users dhoondne ke liye `--enumerate u` chalaya tha, toh Cloudflare ne hamein `403 Forbidden` de kar block kar diya tha? Ab hum us block ko chakar dene ke liye mazeed aggressive flags use karenge taake hum website ke real usernames (jaise admin, author) nikal sakein.
+
+Apne terminal mein ab yeh command run karein:
+
+```bash
+wpscan --url https://www.nineforbrands.com.au --enumerate u --random-user-agent --force
+
+```
+
+---
+
+### 📚 Is Command Ki Detail:
+
+* **`--random-user-agent`**: Yeh Cloudflare ko dhoka dene ke liye har request ke sath browser ka naam badal dega (kabhi Chrome, kabhi Firefox).
+* **`--force`**: Yeh tool ko rukne nahi dega aur `403` ke ba-wajood request bhejta rahega taake agar koi endpoint bypass ho sake toh data nikal aaye.
+
+---
+
+## Output
+
+(habib㉿kali)-[~]
+└─$ wpscan --url https://www.nineforbrands.com.au --enumerate u --random-user-agent --force
+_______________________________________________________________
+         __          _______   _____
+         \ \        / /  __ \ / ____|
+          \ \  /\  / /| |__) | (___   ___  __ _ _ __ ®
+           \ \/  \/ / |  ___/ \___ \ / __|/ _` | '_ \
+            \  /\  /  | |     ____) | (__| (_| | | | |
+             \/  \/   |_|    |_____/ \___|\__,_|_| |_|
+
+         WordPress Security Scanner by the WPScan Team
+                         Version 3.8.28
+       Sponsored by Automattic - https://automattic.com/
+       @_WPScan_, @ethicalhack3r, @erwan_lr, @firefart
+_______________________________________________________________
+
+[+] URL: https://www.nineforbrands.com.au/ [141.193.213.10]
+[+] Started: Sat Jun 20 11:24:39 2026
+
+Interesting Finding(s):
+
+[+] Headers
+ | Interesting Entries:
+ |  - accept-ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+ |  - cf-mitigated: challenge
+ |  - content-security-policy: default-src 'none'; script-src 'nonce-wzaNhOnv54M5JPgdF4VJEJ' 'unsafe-eval' https://challenges.cloudflare.com; script-src-attr 'none'; style-src 'unsafe-inline'; img-src 'self' https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com blob:; child-src 'self' https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri 'self'
+ |  - server: cloudflare
+ |  - critical-ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+ |  - cross-origin-embedder-policy: require-corp
+ |  - cross-origin-opener-policy: same-origin
+ |  - cross-origin-resource-policy: same-origin
+ |  - origin-agent-cluster: ?1
+ |  - permissions-policy: accelerometer=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=*
+ |  - referrer-policy: same-origin
+ |  - server-timing: chlray;desc="a0ebc80c3d64b7dc"
+ |  - cf-ray: a0ebc80c3d64b7dc-KHI
+ |  - alt-svc: h3=":443"; ma=86400
+ | Found By: Headers (Passive Detection)
+ | Confidence: 100%
+
+Fingerprinting the version - Time: 00:00:06 <> (702 / 702) 100.00% Time: 00:00:06
+[i] The WordPress version could not be detected.
+
+[i] The main theme could not be detected.
+
+[+] Enumerating Users (via Passive and Aggressive Methods)
+ Brute Forcing Author IDs - Time: 00:00:00 <==> (10 / 10) 100.00% Time: 00:00:00
+
+[i] No Users Found.
+
+[!] No WPScan API Token given, as a result vulnerability data has not been output.
+[!] You can get a free API token with 25 daily requests by registering at https://wpscan.com/register
+
+[+] Finished: Sat Jun 20 11:24:48 2026
+[+] Requests Done: 761
+[+] Cached Requests: 8
+[+] Data Sent: 385.294 KB
+[+] Data Received: 1.523 MB
+[+] Memory used: 139.758 MB
+[+] Elapsed time: 00:00:09
+
+---
+
+Ghaur se dekhein yahan kya hua hai:
+
+> `cf-mitigated: challenge`
+> `[i] No Users Found.`
+
+`--force` lagane ke ba-wajood Cloudflare ne is baar direct block karne ke bajaye **"Captcha Challenge"** (yaani `cf-mitigated`) bhej diya jo automated tools hal nahi kar sakte. Is wajah se tool ne 761 requests toh phekin, lekin unhein koi bhi real username nahi mila (`No Users Found`).
+
+Iska matlab yeh hai ke **automated tools (jaise WPScan) ke zariye is website par mazeed koi data nahi nikala ja sakta.** Hum ne un ke saare active plugins, theme, aur hosting provider (`WP Engine`) ka pata laga kar is section ka poora juice nikal liya hai.
+
+---
+
+Phase 2 Completed
+
