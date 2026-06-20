@@ -235,3 +235,164 @@ Agar hum `staging.` ko pehle target banayein, toh hamare jeetne ke chances zyada
 Hum `staging.` subdomain par check karenge ke kya developers ne sirf main page par password lagaya hai, ya unho ne baaki folders (directories) ko bhi block kiya hua hai. Is ke liye hum directory scanning ka aik safe test karenge.
 
 ---
+
+## Pehle hum yeh command **`staging.`** subdomain par chalayenge kyunki hum ne seekha tha ke staging par chupe hue folders ya test files milne ka chance zyada hota hai.
+
+Apne terminal mein yeh single command run karein:
+
+```bash
+ffuf -u https://staging.nineforbrands.com.au/FUZZ -w /usr/share/wordlists/dirb/common.txt -mc 200,301,302
+
+```
+
+---
+
+### 📚 Is Command Ki Poori Detail:
+
+#### 1. Is mein kaun sa Tool aur Wordlist use ho rahi hai?
+
+* **Tool:** `ffuf` (Yeh bohot hi tez web fuzzer hai).
+* **Wordlist (`-w`):** `/usr/share/wordlists/dirb/common.txt` (Yeh Kali Linux mein pehle se maujood directory wordlist ka path hai, jismein hazaron aam use hone wale folders ke naam hote hain).
+
+#### 2. Is command ke baki hisson (Flags) ka kya matlab hai?
+
+* **`-u https://staging.nineforbrands.com.au/FUZZ`**: Is mein jo capital lafz **`FUZZ`** likha hai, tool is jagah par `common.txt` ke ek ek lafz ko fit kar ke check karega (jaise `/admin`, `/login`, `/backup`).
+* **`-mc 200,301,302`**: Iska matlab hai **Match Status Codes**. Hum tool ko keh rahe hain ke hamein sirf wohi folders dikhao jiska status code `200` (Success/Ok), `301` ya `302` (Redirect) aaye. Jo folders exist nahi karte (404 Error), unhein chupao taake screen par kachra na dikhe.
+
+#### 3. Agar is command se koi folder mil gaya, toh hum kya karenge? (Hacker Logic)
+
+* **`/wp-content/` ya `/wp-includes/`:** Agar yeh mile, toh confirm ho jayega ke staging par bhi WordPress hi chal raha hai.
+* **`/backup/`, `/dev/`, ya `/old/`:** Agar aisa koi folder milta hai jo status code `200` de raha ho, toh hum browser mein ja kar usay direct kholenge. Wahan developers ki chori hui zip files ya database files ho sakti hain.
+* **`/robots.txt`:** Is file ke andar developers ne khud likha hota hai ke Google un ke kaun se folders ko na dekhe. Jo folders unho ne Google se chupaye hote hain, hackers sab se pehle unhi ko check karte hain.
+
+---
+## Output                                                                                                       
+┌──(habib㉿kali)-[~]
+└─$ ffuf -u https://staging.nineforbrands.com.au/FUZZ -w /usr/share/wordlists/dirb/common.txt -mc 200,301,302
+
+        /'___\  /'___\           /'___\       
+       /\ \__/ /\ \__/  __  __  /\ \__/       
+       \ \ ,__\\ \ ,__\/\ \/\ \ \ \ ,__\      
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/      
+         \ \_\   \ \_\  \ \____/  \ \_\       
+          \/_/    \/_/   \/___/    \/_/       
+
+       v2.1.0-dev
+________________________________________________
+
+ :: Method           : GET
+ :: URL              : https://staging.nineforbrands.com.au/FUZZ
+ :: Wordlist         : FUZZ: /usr/share/wordlists/dirb/common.txt
+ :: Follow redirects : false
+ :: Calibration      : false
+ :: Timeout          : 10
+ :: Threads          : 40
+ :: Matcher          : Response status: 200,301,302
+________________________________________________
+
+:: Progress: [4614/4614] :: Job [1/1] :: 7 req/sec :: Duration: [0:05:15] :: Errors: 4613 ::
+
+Tool ne total **4,614 requests** bhejin, aur un mein se **4,613 requests par Error** aa gaya! Aur screen par hamein status code `200, 301, 302` wala ek bhi result nazar nahi aaya.
+
+### 🔍 Is Output Ka Asal Matlab Kya Hai? (Analysis)
+
+#### 1. Rate Limiting ya WAF (Firewall) Block:
+
+Hum ne abhi thori der pehle discuss kiya tha ke Amazon/AWS ke Cloud servers par firewalls (WAF) bohot sakhth hote hain. `ffuf` bohot tezi se requests bhejta hai (is ne total 40 threads par kaam kiya). AWS WAF ne dekha ke ek hi IP se itni tezi se folders scan kiye ja rahe hain, toh us ne hamare terminal ki requests ko **block (drop)** kar diya, jis ki wajah se terminal mein `Errors: 4613` aa gaya.
+
+#### 2. Subdomain Configuration:
+
+Aisa bhi ho sakta hai ke yeh `staging.` subdomain sirf unke internal office ke network (IP) par khulta ho, aur bahar ki public internet traffic ke liye yeh close ya offline ho, jis ki wajah se saari requests fail ho gayin.
+
+---
+
+### 💡 Hacker Logic: Ab Hamein Agla Kadam Kya Uthana Chahiye?
+
+Jab `ffuf` ya koi bhi brute-force tool firewall ki wajah se block ho jaye, toh hacker haar nahi maanta, balkeh apni **strategy badalta hai**.
+
+Hum do kaam kar sakte hain:
+
+1. Ya toh hum apni requests ki speed ko bohot slow kar dein taake firewall bypass ho jaye.
+2. Ya phir hum `staging.` ko chorr kar **main website** (`https://www.nineforbrands.com.au`) par yahi scan try karein, kyunki main website public ke liye hamesha 100% open hoti hai.
+
+Chalein, hum **main website** par scan chalate hain lekin is baar thori si change ke sath taake firewall hamiem block na kare.
+
+Apne terminal mein ab yeh single command run karein:
+
+```bash
+ffuf -u https://www.nineforbrands.com.au/FUZZ -w /usr/share/wordlists/dirb/common.txt -mc 200,301,302 -p 1.0
+
+```
+## Output
+
+┌──(habib㉿kali)-[~]
+└─$ ffuf -u https://www.nineforbrands.com.au/FUZZ -w /usr/share/wordlists/dirb/common.txt -mc 200,301,302 -p 1.0
+
+        /'___\  /'___\           /'___\       
+       /\ \__/ /\ \__/  __  __  /\ \__/       
+       \ \ ,__\\ \ ,__\/\ \/\ \ \ \ ,__\      
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/      
+         \ \_\   \ \_\  \ \____/  \ \_\       
+          \/_/    \/_/   \/___/    \/_/       
+
+       v2.1.0-dev
+________________________________________________
+
+ :: Method           : GET
+ :: URL              : https://www.nineforbrands.com.au/FUZZ
+ :: Wordlist         : FUZZ: /usr/share/wordlists/dirb/common.txt
+ :: Follow redirects : false
+ :: Calibration      : false
+ :: Timeout          : 10
+ :: Threads          : 40
+ :: Delay            : 1.00 seconds
+ :: Matcher          : Response status: 200,301,302
+________________________________________________
+
+favicon.ico             [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 380ms]
+robots.txt              [Status: 200, Size: 355, Words: 18, Lines: 16, Duration: 205ms]
+:: Progress: [4614/4614] :: Job [1/1] :: 21 req/sec :: Duration: [0:03:38] :: Errors: 0 ::
+
+Pichli baar 4,613 errors aaye the, aur is baar **`Errors: 0`** hain! Iska matlab aap ne AWS ke firewall (WAF) ko kamyabi se bypass kar diya aur server ne hamari saari requests ko accept kiya.
+
+Terminal ne hamein do bohot important files dhoond kar di hain:
+
+1. `favicon.ico` [Status: 200]
+2. `robots.txt` [Status: 200] 🔥
+
+Chalein ab in dono ko aik aik karke asan lafzon mein dissect karte hain ke in ka kya matlab hai aur hacker in se kya faida uthata hai.
+
+---
+
+### 1. `favicon.ico` (Status: 200)
+
+* **Yeh kya hai?** Jab aap koi website browser mein kholte hain, toh tab (tab) ke upar jo chota sa logo ya icon nazar aata hai, yeh wohi image file hoti hai.
+* **Hacker Logic / Faida (Favicon Hashing):** Cyber security mein har file ka ek unique "Hash" (fingerprint) hota hai. Shanti se kaam karne wale hackers is favicon ka hash nikal kar internet ke baday search engines (jaise Shodan ya Censys) par search karte hain. Is se unhein duniyabhari mein chalne wale un saare chupe hue servers ka pata chal jata hai jo bilkul isi company ke hain aur same logo use kar rahe hain.
+
+---
+
+### 2. `robots.txt` (Status: 200) 🔥 **(Asal Gold Mine)**
+
+* **Yeh kya hai?** Yeh ek aisi file hoti hai jo website ka maalik (developer) jaan-booch kar banata hai taake Google, Bing, ya baaki search engines ke bots ko bata sake ke website ke kaun se hisson ko internet par publicly show karna hai aur kaun se hisson ko **chupana (Disallow)** hai.
+* **Hacker Logic / Faida:** Developers samajhte hain ke agar unho ne is file mein kisi folder ko `Disallow` kar diya toh koi aam banda usay nahi dekh sake ga. Lekin hackers sab se pehle is file ko kholte hain! Kyunki developer ne khud likh kar bataya hota hai ke *"Bhai, yeh wale folders secret hain, inhein mat dekhna."*
+
+---
+
+### Agla Kadam (Next Step) Kya Hoga?
+
+Ab hamara terminal ka rasta bilkul clear hai. Hamein pata chal gaya hai ke `robots.txt` maujood hai aur woh `Status: 200` (yani successfully open) de rahi hai. Ab hamein dekhna hai ke us file ke andar developers ne kaun kaun se raaste chupaye hue hain.
+
+Ab aap terminal mein yeh single command run karein:
+
+```bash
+curl -s https://www.nineforbrands.com.au/robots.txt
+
+```
+
+---
+
+### 📚 Is Command Ki Detail:
+
+* **Tool (`curl`):** Client URL. Yeh terminal ka apna browser hota hai. Yeh bina kisi website ko graphical khole, uske andar ka text direct aap ke terminal screen par print kar deta hai.
+* **`-s` Flag (Silent):** Yeh command ko kehta hai ke progress bar ya faltu download speed show na kare, sirf file ka asal data screen par dikhaye.
+
