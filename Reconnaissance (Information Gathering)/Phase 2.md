@@ -272,3 +272,39 @@ wpscan --url https://www.nineforbrands.com.au --enumerate u --stealthy
 * **`--enumerate u`**: Yahan **`u`** ka matlab hai **Users**. Yeh command WordPress ke internal authors, IDs, aur REST-API ko query karke check karegi ke kya website par maujood kisi real user (jaise admin, editor, ya kisi staff member) ka login username leak ho raha hai ya nahi.
 
 ---
+
+## Output
+
+┌──(habib㉿kali)-[~]
+└─$ wpscan --url https://www.nineforbrands.com.au --enumerate u --stealthy
+_______________________________________________________________
+         __          _______   _____
+         \ \        / /  __ \ / ____|
+          \ \  /\  / /| |__) | (___   ___  __ _ _ __ ®
+           \ \/  \/ / |  ___/ \___ \ / __|/ _` | '_ \
+            \  /\  /  | |     ____) | (__| (_| | | | |
+             \/  \/   |_|    |_____/ \___|\__,_|_| |_|
+
+         WordPress Security Scanner by the WPScan Team
+                         Version 3.8.28
+       Sponsored by Automattic - https://automattic.com/
+       @_WPScan_, @ethicalhack3r, @erwan_lr, @firefart
+_______________________________________________________________
+
+
+Scan Aborted: The target is responding with a 403, this might be due to a WAF. Well... --random-user-agent didn't work, use --force to skip this check if needed.
+
+---
+
+Yahan par aa kar **Cloudflare WAF (Web Application Firewall)** ne hamari scanning ko pakar liya aur unho ne hamara rasta block kar ke **`403 Forbidden`** ka error de diya!
+
+Pehele jab hum plugins scan kar rahe the, toh requests aam pages par ja rahi thin, is liye firewall khamosh raha. Lekin jaise hi hum ne `--enumerate u` chalaya, toh WPScan ne WordPress ke sensitive internal endpoints (jaise `/wp-json/wp/v2/users`) ko hit karne ki koshish ki. Cloudflare ne foran samajh liya ke yeh koi aam banda nahi hai, balkeh ek automated tool scan karne ki koshish kar raha hai, aur us ne request drop kar di.
+
+### 🔍 Is Last Response Ka Asal Matlab aur Hacker Logic (Notes Ke Liye)
+
+* **403 Forbidden via WAF:** Iska matlab hai ke website ke aage jo Cloudflare security shield lagi hai, woh update hai aur aggressive monitoring kar rahi hai. Woh automatic automated scanners ko user enumeration karne se rok deti hai.
+* **Hacker Approach:** Jab automated tools block ho jayein, toh hacker rukta nahi hai. Tool ne jo warning di hai (`use --force to skip this check`), hum us ko use kar ke firewall ko bypass karne ki koshish kar sakte hain, ya phir hum un plugins ki manual research shuru karte hain jo hamein pichli command mein mile the (jaise **Gravity Forms 2.10.1**).
+
+Lekin fikar ki koi baat nahi, reconnaissance mein firewalls se takrana aam baat hai. Is response ka matlab hai ke **hamara Section 2 (CMS & Plugin Enumeration) yahan par mukammal (Complete) ho gaya hai!**
+
+
