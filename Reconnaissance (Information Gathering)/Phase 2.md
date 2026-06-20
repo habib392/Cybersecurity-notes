@@ -383,3 +383,100 @@ curl -I https://www.nineforbrands.com.au/wp-content/themes/ninetrade/style.css
 Hum direct theme ke andar maujood `style.css` file ka status code check kar rahe hain. Agar iska status `200 OK` aa jata hai, toh iska matlab hoga ke hum theme ke files ko direct access kar pa rahe hain, aur phir hum mazeed files dhoond sakte hain.
 
 ---
+
+## Output
+
+──(habib㉿kali)-[~]
+└─$ curl -I https://www.nineforbrands.com.au/wp-content/themes/ninetrade/style.css
+HTTP/2 200 
+date: Sat, 20 Jun 2026 14:41:16 GMT
+content-type: text/css
+server: cloudflare
+vary: Accept-Encoding
+vary: Accept-Encoding
+last-modified: Thu, 30 May 2024 13:55:25 GMT
+etag: W/"6658854d-b6"
+age: 1703
+set-cookie: __cf_bm=QQYXjW8r5VJV56p9zHGS5hDvMSrwV_B85D0kDIdZURA-1781966476.8458276-1.0.1.1-vcWozo2KauSUvYU16vWhGpL4Blnucb6NILVva09Osc4HhDBkemWXfafFNP4U3p7h99yipUk6GIX4EHFBhizuz.qZBSOcUk85i2CdbTrQySOSJKuJ6w4uAFJcE4_CtwZn; HttpOnly; SameSite=None; Secure; Path=/; Domain=www.nineforbrands.com.au; Expires=Sat, 20 Jun 2026 15:11:16 GMT
+cache-control: public, max-age=31536000
+access-control-allow-origin: *
+content-security-policy: frame-ancestors 'self' my.enboarder.com nine.enboarder.io;
+cf-cache-status: HIT
+cf-ray: a0eb88904d1dc697-KHI
+alt-svc: h3=":443"; ma=86400
+
+---
+
+### Cloudflare ne is request ko bilkul nahi roka aur file publicly open hai.
+
+Chalein, is output ko poori tarah dissect karte hain ke is mein kya chupa hua hai.
+
+---
+
+### 🔍 Is Output Ka Asal Matlab (Analysis)
+
+#### 1. Direct File Access Open Hai (`200 OK`)
+
+Jab theme ka main folder `/ninetrade/` hit kiya tha toh `500 Error` aaya tha, lekin uske andar ki specific file `style.css` par `200 OK` aa gaya. Is se hacker ko yeh confirm ho jata hai ke server par **Directory Browsing / Indexing** toh off hai (yani aap poore folder ki list nahi dekh sakte), lekin agar aap ko kisi file ka exact naam pata ho, toh aap use direct download ya read kar sakte hain.
+
+#### 2. Last Modified Date Leak (`last-modified: Thu, 30 May 2024`)
+
+Server header saaf bata raha hai ke is theme ki file ko aakhri baar **30 May 2024** ko modify (change) kiya gaya تھا.
+
+* **Hacker Logic:** Iska matlab hai ke pichle do saal se (2024 se le kar ab 2026 tak) is custom theme ke code ko update ya secure nahi kiya gaya. Agar is theme ke andar koi coding mistake ya bug hua, toh woh abhi bhi wahan maujood hoga kyunki developer ne isay tab se hath nahi lagaya.
+
+#### 3. Cloudflare Cache Hit (`cf-cache-status: HIT`)
+
+Yahan `HIT` ka matlab hai ke yeh file Cloudflare ke apne server par save (cache) ho chuki thi, is liye jab aap ne request bhejni, toh Cloudflare ne real server tak request bheji hi nahi, balkeh apne paas se hi `style.css` utha kar de di. Is liye hamari request pakdi nahi gayi.
+
+---
+
+### 💡 Hacker Logic: Ab Hum Is Se Kya Kar Sakte Hain?
+
+Chunke `style.css` par `200 OK` aya hai, toh iska matlab hum is file ka poora text content read kar sakte hain. WordPress themes ki `style.css` ke bilkul start mein developer ka naam, theme ka version, aur baaz auqat secret comments likhe hote hain jo source code mein nazar nahi aate.
+
+Hum terminal se hi is file ke andar ka text nikal kar check karenge.
+
+Apne terminal mein yeh single command run karein:
+
+```bash
+curl -s https://www.nineforbrands.com.au/wp-content/themes/ninetrade/style.css | head -n 20
+
+```
+
+---
+
+### 📚 Is Command Ki Detail:
+
+* **`curl -s`**: Silent mode mein bina kisi speed meter ke file ka data fetch karega.
+* **`| head -n 20`**: Is pipe (`|`) symbol ka matlab hai ke curl ka jo bhi output aaye, usay aglay tool ko de do. **`head -n 20`** ka kaam hota hai ke kisi bhi barri file ke sirf **shuru ke 20 lines** screen par dikhana. Kyunki hamara maqsad sirf theme ki metadata info dhoondna hai jo start mein hoti hai, poori file dekh kar screen bhrne ki zaroorat nahi.
+
+---
+
+## Output
+
+┌──(habib㉿kali)-[~]
+└─$ curl -s https://www.nineforbrands.com.au/wp-content/themes/ninetrade/style.css | head -n 20
+/*!
+ * Theme Name:  Nine Trade
+ * Theme URI:   http://thecode.co/
+ * Author:      The Code Co.
+ * Author URI:  http://thecode.co/
+ * Version:     1.0.0
+ * Text Domain: ninetrade
+ */
+
+ ---
+
+Yeh output confirm karta hai ke jo data hum ne pehle `wpscan` ke passive method se nikala tha, woh bilkul accurate hai. Yahan kuch cheezein bohot clear ho gayi hain:
+
+1. **Custom Theme:** Theme ka naam `Nine Trade` hai aur isay ek third-party agency `The Code Co.` ne banaya hai. Yeh koi standard public theme nahi hai, balkeh is company ke liye custom-designed theme hai.
+2. **Version `1.0.0`:** Iska version `1.0.0` hai aur jaisa ke hum ne pichle response mein dekha ke yeh **May 2024** se update nahi hui, iska matlab hai ke yeh is theme ka bilkul pehla aur raw version hai. Custom themes mein aksar generic security tests nahi kiye jaate, jis ki wajah se in mein vulnerabilities (jaise Local File Inclusion ya XSS) hone ka chance zyada hota hai.
+
+---
+
+### 🏁 **Section 2 Ab Mukammal (Complete) Ho Gaya Hai!**
+
+Yahan par hamara **Section 2 (CMS & Plugin Enumeration)** poori tarah khatm hota hai. Hum ne website ke WordPress plugins dhoond liye, un ke out-dated versions ka pata laga liya, host (`WP Engine`) pakar liya, aur active theme ki details bhi nikaal lein. Users dhoondte waqt firewall ne hamein block kiya, jo is baat ka ishara hai ke automated scanning ki limit yahan khatm ho gayi.
+
+---
