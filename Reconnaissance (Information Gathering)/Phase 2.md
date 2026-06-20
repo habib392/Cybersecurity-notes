@@ -1,7 +1,7 @@
 ## Phase 2
 
 ```bash
-wpscan --url https://www.nineforbrands.com.au --enumerate p,t --stealth
+wpscan --url https://www.nineforbrands.com.au --enumerate p,t --stealthy
 
 ```
 
@@ -17,7 +17,7 @@ Is mein **`wpscan`** (WordPress Security Scanner) use ho raha hai. Yeh Kali Linu
 
 * **`--url`**: Target website ka direct link.
 * **`--enumerate p,t`**: **Enumerate** ka matlab hota hai ek ek karke dhoondna aur list banana. **`p`** ka matlab hai *Plugins* aur **`t`** ka matlab hai *Themes*. Hum tool ko keh rahe hain ke is website par jitne bhi plugins aur themes install hain, unka pata lagao.
-* **`--stealth`**: Chunke is website par Cloudflare aur AWS ki security shields lagi hui hain, yeh flag hamari scanning ki speed aur pattern ko thora badal deta hai taake firewall hamare tool ko block na kare aur scan khamoshi se nikal jaye.
+* **`--stealthy`**: Chunke is website par Cloudflare aur AWS ki security shields lagi hui hain, yeh flag hamari scanning ki speed aur pattern ko thora badal deta hai taake firewall hamare tool ko block na kare aur scan khamoshi se nikal jaye.
 
 #### 3. Agar is command se data mil gaya, toh hum us se kya faida utha sakte hain? (Hacker Logic)
 
