@@ -481,8 +481,63 @@ Direct File Access: Sub-files (jaise CSS) par 200 OK response mil raha hai, jisk
 
 ---
 
-### 🏁 **Section 2 Ab Mukammal (Complete) Ho Gaya Hai!**
+#### Hum ne abhi tak do cheezein bilkul confirm nikal li hain:
 
-Yahan par hamara **Section 2 (CMS & Plugin Enumeration)** poori tarah khatm hota hai. Hum ne website ke WordPress plugins dhoond liye, un ke out-dated versions ka pata laga liya, host (`WP Engine`) pakar liya, aur active theme ki details bhi nikaal lein. Users dhoondte waqt firewall ne hamein block kiya, jo is baat ka ishara hai ke automated scanning ki limit yahan khatm ho gayi.
+1. Website ke real plugins ke naam aur un ke versions (jaise **Gravity Forms 2.10.1** aur **Addons for Beaver Builder 3.9.2**).
+2. Yeh ke direct files ka access khula hua hai (`200 OK`).
+
+Ab hamara sab se behtareen aur logical step yeh hai ke hum **Gravity Forms (Version 2.10.1)** ki manual security research karein. WPScan ne hamein bataya tha ke yeh version **outdated (purana)** hai. Cyber security mein jab koi mashhoor plugin purana ho, toh us ke andar bugs milne ke chances bohot zyada hote hain.
+
+Hum Kali Linux ke andar hi maujood ek bohot bade database ke zariye check karenge ke kya is version mein koi pehle se dhoonda hua bug (exploit) maujood hai ya nahi.
+
+Apne terminal mein yeh single command run karein:
+
+```bash
+searchsploit gravity forms
+
+```
+
+---
+
+### 📚 Is Command Ki Poori Detail (Notes ke liye):
+
+#### 1. Is mein kaun sa Tool use ho raha hai?
+
+Is mein **`searchsploit`** use ho raha hai. Yeh Kali Linux ka ek default command-line tool hai jo **Exploit-DB** (duniya ka sab se bada public exploits ka database) ke offline version ko search karta hai. Is ke liye internet ki zaroorat nahi hoti, yeh aap ke Kali Linux ke andar se hi data dhoondta hai.
+
+#### 2. Is command ka maqsad kya hai?
+
+Hum tool ko keh rahe hain ke "Exploit-DB ke saare records check karo aur jahan bhi **Gravity Forms** likha ho, un saare public exploits aur bugs ki list mere samne le aao."
+
+#### 3. Hacker Logic (Hum is se kya dhoond rahe hain?):
+
+Hum check karna chahte hain ke kya `2.10.1` ya us se purane versions par koi **Arbitrary File Upload**, **Sensitive Data Disclosure**, ya **SQL Injection** ka ready-made payload ya script maujood hai? Agar yahan koi exploit mil jata hai jo hamare target version par kaam karta hai, toh hum aglay step mein usay verify kar sakte hain.
+
+---
+
+## Output
+
+┌──(habib㉿kali)-[~]
+└─$ searchsploit gravity forms
+---------------------------------------------- ---------------------------------
+ Exploit Title                                |  Path
+---------------------------------------------- ---------------------------------
+WordPress Plugin Aviary Image Editor Addon Fo | php/webapps/37275.txt
+WordPress Plugin Gravity Forms 1.8.19 - Arbit | php/webapps/39969.php
+---------------------------------------------- ---------------------------------
+Shellcodes: No Results
+
+---
+
+Bhai, `searchsploit` ka output hamare saamne aa gaya hai. Exploit-DB ke mutabiq Gravity Forms par sirf do bade public exploits purane register hain:
+
+1. Ek Aviary Addon ke liye hai.
+2. Doosra **Gravity Forms 1.8.19** ka hai jo ke *Arbitrary File Upload* (yani server par apni marzi ki file charhana) ka exploit hai.
+
+### 🔍 Is Output Ka Asal Matlab (Analysis)
+
+Hamare target par Gravity Forms ka version **`2.10.1`** chal raha hai. Chunke `1.8.19` bohot purana version hai, iska matlab hai ke yeh makhsoos public exploit (`39969.php`) is naye version par direct kaam nahi karega, kyunki developers ne 1.8.19 ke baad is bug ko theek (patch) kar diya tha.
+
+Lekin iska yeh matlab hargiz nahi ke website bilkul safe hai. `searchsploit` sirf un exploits ko dikhata hai jo bade public text ya script files ki surat mein save hain. Google aur CVE databases par aksar aisi vulnerabilities hoti hain jin ke sirf proof-of-concept (PoC) likhe hote hain.
 
 ---
