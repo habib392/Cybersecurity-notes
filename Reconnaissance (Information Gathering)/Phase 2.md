@@ -475,6 +475,12 @@ Yeh output confirm karta hai ke jo data hum ne pehle `wpscan` ke passive method 
 
 ---
 
+Manual Path Verification: Direct plugins ke main folders par 403 Forbidden ya 301 Redirect mil raha hai, jo confirm karta hai ke plugins (addons-for-beaver-builder aur beaver-charts-pro) server par physically maujood hain.
+
+Direct File Access: Sub-files (jaise CSS) par 200 OK response mil raha hai, jiska matlab hai agar koi specific vulnerability file path pata ho, toh use directly access kiya ja sakta hai.
+
+---
+
 ### 🏁 **Section 2 Ab Mukammal (Complete) Ho Gaya Hai!**
 
 Yahan par hamara **Section 2 (CMS & Plugin Enumeration)** poori tarah khatm hota hai. Hum ne website ke WordPress plugins dhoond liye, un ke out-dated versions ka pata laga liya, host (`WP Engine`) pakar liya, aur active theme ki details bhi nikaal lein. Users dhoondte waqt firewall ne hamein block kiya, jo is baat ka ishara hai ke automated scanning ki limit yahan khatm ho gayi.
