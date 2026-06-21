@@ -598,3 +598,74 @@ curl -X POST -d "action=test_track" https://www.nineforbrands.com.au/wp-json/yoa
 
 ---
 
+## Output
+
+┌──(habib㉿kali)-[~]
+└─$ curl -X POST -d "action=test_track" https://www.nineforbrands.com.au/wp-json/yoast/v1/action_tracking
+{"code":"rest_forbidden","message":"Sorry, you are not allowed to do that.","data":{"status":401}}  
+
+--
+
+#### Response hamare saamne hai:
+
+> `{"code":"rest_forbidden","message":"Sorry, you are not allowed to do that.","data":{"status":401}}`
+
+Hum ne jaise hi `POST` request pheenki, Yoast SEO ke internal authentication check ne hamein block kar diya aur **`401 Unauthorized`** ka error return kiya (`rest_forbidden`).
+
+---
+
+### 🔍 Is Response Ka Asal Matlab (Analysis)
+
+1. **Authentication Shield Active Hai:** Iska matlab hai ke Yoast SEO ke developers ne is makhsoos action tracking endpoint par access control lagaya hua hai. `POST` requests bhejne ke liye ya toh WordPress Admin ke valid cookies/tokens chahiye, ya phir aik valid **`X-WP-Nonce`** header bhejhna padega jo authenticated user ke paas hota hai.
+2. **Security Defenses:** Halankeh version outdated (`27.5`) hai, lekin Core API authentication hooks (jo WordPress core supply karta hai) un authenticated inputs ko backend logic chalane se pehle hi reject kar rahe hain.
+
+---
+
+### 💡 Hacker Logic & Next Logical Move
+
+Chunke `POST` methods par authentication strict hai, toh hamara agla logical step yeh dekhna hai ke jo **`GET`** endpoints hain (jaise `/yoast/v1/available_posts` ya website ka meta data information endpoint jo hum ne pichle JSON map mein dekha tha), kya un par bhi authentication check laga hua hai ya woh unauthenticated users ke liye open hain?
+
+Aksar plugins data modify karne (`POST`) par toh security lagate hain, lekin data dekhne (`GET`) par rules strict nahi rakhte, jise hum **Information Disclosure** kehte hain.
+
+Chalein, hum `/yoast/v1/available_posts` ka functional behavior check karte hain ke kya yeh bina login ke content leak karta hai ya nahi.
+
+Apne terminal mein yeh single command run karein:
+
+```bash
+curl -I https://www.nineforbrands.com.au/wp-json/yoast/v1/available_posts
+
+```
+
+---
+
+### 📚 Is Command Ki Detail:
+
+Hum `GET` request (via `-I` headers) bhej kar check kar rahe hain ke kya `/available_posts` endpoint hamein `200 OK` deta hai ya yeh bhi `401 Unauthorized` return karta hai.
+
+---
+
+## Output
+
+(habib㉿kali)-[~]
+└─$ curl -I https://www.nineforbrands.com.au/wp-json/yoast/v1/available_posts
+HTTP/2 401 
+date: Sun, 21 Jun 2026 11:46:24 GMT
+content-type: application/json; charset=UTF-8
+server: cloudflare
+access-control-allow-headers: Authorization, X-WP-Nonce, Content-Disposition, Content-MD5, Content-Type
+access-control-expose-headers: X-WP-Total, X-WP-TotalPages, Link
+cache-control: max-age=3600, must-revalidate
+link: <https://www.nineforbrands.com.au/wp-json/>; rel="https://api.w.org/"
+status: 401 Unauthorized
+x-content-type-options: nosniff
+x-powered-by: WP Engine
+x-robots-tag: noindex
+x-pass-why: custom-path
+set-cookie: __cf_bm=67mAhluhv7fB8wsFUs4Nf0UQkjV6ZVtjPtkhS9XTsgE-1782042383.3125474-1.0.1.1-NBpOG.EdY1b1lZWHVNbLLbRu92YoTUp.nCzrxgq3Ts9Uu22CIr.NNUcLoR.W78pBoeSP8FLQRXGZ53bmBY6oxwWRXHwoApEYijOFVN5TslfMlP.zAlSKqdeYMn837hte; HttpOnly; SameSite=None; Secure; Path=/; Domain=www.nineforbrands.com.au; Expires=Sun, 21 Jun 2026 12:16:24 GMT
+cf-cache-status: DYNAMIC
+cf-ray: a0f2c5bfba94a813-KHI
+alt-svc: h3=":443"; ma=86400
+
+---
+
+
