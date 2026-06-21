@@ -371,5 +371,41 @@ curl -s https://www.nineforbrands.com.au/wp-json/yoast/v1/ | json_pp | head -n 3
 
 ## Output
 
+┌──(habib㉿kali)-[~]
+└─$ curl -s https://www.nineforbrands.com.au/wp-json/yoast/v1/ | json_pp | head -n 30
+{
+   "_links" : {
+      "up" : [
+         {
+            "href" : "https://www.nineforbrands.com.au/wp-json/"
+         }
+      ]
+   },
+   "namespace" : "yoast/v1",
+   "routes" : {
+      "/yoast/v1" : {
+         "_links" : {
+            "self" : [
+               {
+                  "href" : "https://www.nineforbrands.com.au/wp-json/yoast/v1"
+               }
+            ]
+         },
+         "endpoints" : [
+            {
+               "args" : {
+                  "context" : {
+                     "default" : "view",
+                     "required" : false
+                  },
+                  "namespace" : {
+                     "default" : "yoast/v1",
+                     "required" : false
+                  }
+               },
+
+---
+
+
 
 
