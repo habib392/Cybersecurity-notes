@@ -156,3 +156,53 @@ Hum WordPress ke official **REST API (`/wp-json/`)** ka status check kar rahe ha
 
 ---
 
+## Output
+
+┌──(habib㉿kali)-[~]
+└─$ curl -I https://www.nineforbrands.com.au/wp-json/
+HTTP/2 200 
+date: Sun, 21 Jun 2026 10:13:56 GMT
+content-type: application/json; charset=UTF-8
+server: cloudflare
+vary: Accept-Encoding
+access-control-allow-headers: Authorization, X-WP-Nonce, Content-Disposition, Content-MD5, Content-Type
+access-control-expose-headers: X-WP-Total, X-WP-TotalPages, Link
+allow: GET
+cache-control: max-age=, must-revalidate
+link: <https://www.nineforbrands.com.au/wp-json/>; rel="https://api.w.org/"
+x-content-type-options: nosniff
+x-powered-by: WP Engine
+x-robots-tag: noindex
+content-security-policy: frame-ancestors 'self' my.enboarder.com nine.enboarder.io;
+set-cookie: __cf_bm=EEctV82X15vQQIgCToezGPVtxcgYuxyvDvOtJ2H8gf8-1782036835.0378895-1.0.1.1-arJeG_PKlZZMMnuw4jD3x7FbOdROTWez1geDV7kWkaEs_XkOALtXsAXaaIDF.CFhTwtoHDIgz6IzbwqeZSL2jfJCH7124NFseSbggpZXKvaUvRI3bbhHYzOUG2ykozFU; HttpOnly; SameSite=None; Secure; Path=/; Domain=www.nineforbrands.com.au; Expires=Sun, 21 Jun 2026 10:43:56 GMT
+x-pass-why: custom-path
+cf-cache-status: DYNAMIC
+cf-ray: a0f23e4af919bce1-KHI
+alt-svc: h3=":443"; ma=86400
+
+---
+
+#### Yaheen par asal game shuru hoti hai! Aap ko **`HTTP/2 200 OK`** mil gaya hai, aur content-type **`application/json`** hai.
+
+Iska saaf matlab yeh hai ke website ka **WordPress REST API publicly open aur accessible hai**, aur Cloudflare ya WP Engine ne isko block nahi kiya. Cyber security aur manual research mein yeh aik bohot bari kamyabi hoti hai kyunki ab hum directly API routes ko query kar ke website ka internal data aur custom plugin handlers ki details nikal sakte hain.
+
+Ghaur se dekhein yahan kya leak ho raha hai:
+
+> **`access-control-allow-headers: Authorization, X-WP-Nonce, Content-Disposition...`**
+
+Yeh headers hamein batate hain ke hum API ke sath endpoints par data interact (GET/POST) kar sakte hain.
+
+---
+
+### 💡 Hacker Logic: Ab Vulnerability Ko Dhoondna Aur Verify Kaise Karein?
+
+Chunke REST API khula hua hai aur hamare paas Gravity Forms (`2.10.1`) aur Yoast SEO (`27.5`) ke out-dated versions hain, toh cyber security research (Phase 3) ka rule yeh hai ke hum ab internet par maujood public resources ke sath is data ko map karenge.
+
+Hum ne yeh dekhna hai ke kya in makhsoos versions ke liye koi specific endpoints report hue hain jo is open `/wp-json/` ke raste se access kiye ja sakte hain.
+
+> * **REST API Verification:** `/wp-json/` is fully open (`200 OK`) and returns JSON content, confirming that the site's API endpoints are exposed for further route mapping.
+> 
+> 
+
+Ab hamara agla step yeh hai ke hum open-source vulnerability databases (jaise CVE Details ya National Vulnerability Database) par in dono plugins ke exact versions ki vulnerability history dhoondein taake hamein exact match mil sake.
+
