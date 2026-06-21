@@ -206,3 +206,101 @@ Hum ne yeh dekhna hai ke kya in makhsoos versions ke liye koi specific endpoints
 
 Ab hamara agla step yeh hai ke hum open-source vulnerability databases (jaise CVE Details ya National Vulnerability Database) par in dono plugins ke exact versions ki vulnerability history dhoondein taake hamein exact match mil sake.
 
+Sab se behtareen aur faydemand rasta yeh hai ke hum **Gravity Forms (Version 2.10.1)** ko target karein. Kyunki forms wale plugins direct user input handle karte hain aur in mein bugs milne par faida (jaise sensitive data nikalna ya form submission ko bypass karna) bohot zyada hota hai.
+
+Chunke hamara REST API (`/wp-json/`) bilkul khula hua mila hai, toh ab hum Gravity Forms ka aik makhsoos route check karenge jo is version ke aas-paas ke intermediate versions mein publicly information leak karne ke liye jana jata hai.
+
+Hum Gravity Forms ka official API route hit kar ke dekhenge ke kya un ka forms ka data ya database structures leak ho rahe hain.
+
+Apne terminal mein yeh single command run karein:
+
+```bash
+curl -I https://www.nineforbrands.com.au/wp-json/gf/v2/
+
+```
+
+---
+
+### 📚 Is Command Ki Detail (Notes ke liye):
+
+#### 1. Is endpoint (`/wp-json/gf/v2/`) ka kya maqsad hai?
+
+WordPress REST API open hone ke baad, har plugin apna ek alag rasta (route) banata hai. Gravity Forms v2 ka default API route **`gf/v2/`** hota hai.
+
+#### 2. Hacker Logic:
+
+Hum dekhna chahte hain ke kya server is Gravity Forms ke API endpoint par `200 OK` deta hai, `401 Unauthorized` (yani password mangta hai), ya phir `404 Not Found` deta hai.
+
+* **401 Unauthorized:** Iska matlab hoga ke API route toh active hai lekin unho ne isay secure kiya hua hai.
+* **200 OK:** Iska matlab hoga ke jackpot! Hum bina kisi login ke un ke forms ki details nikal sakte hain.
+
+---
+
+## Output
+
+(habib㉿kali)-[~]
+└─$ curl -I https://www.nineforbrands.com.au/wp-json/gf/v2/
+HTTP/2 404 
+date: Sun, 21 Jun 2026 11:20:02 GMT
+content-type: application/json; charset=UTF-8
+server: cloudflare
+vary: Accept-Encoding
+access-control-allow-headers: Authorization, X-WP-Nonce, Content-Disposition, Content-MD5, Content-Type
+access-control-expose-headers: X-WP-Total, X-WP-TotalPages, Link
+cache-control: max-age=, must-revalidate
+link: <https://www.nineforbrands.com.au/wp-json/>; rel="https://api.w.org/"
+status: 404 Not Found
+x-content-type-options: nosniff
+x-powered-by: WP Engine
+x-robots-tag: noindex
+set-cookie: __cf_bm=r2umcj2D._5wOUXE1iwWVDi7NugSn6RBx1KcqpMKXLU-1782040801.4784398-1.0.1.1-uvMStB9bJ9VPbwDDCnUJdPSaibwWW5.7VHYkvL.LPJdcwRy8o.NFeJwZIQ7O_Ul8n_RjWZW6OpLe3Sn2x6zgwDbiXJmNkHRUY2Uqs8f1NaWolYb.bJM3LjRC7nlocWOr; HttpOnly; SameSite=None; Secure; Path=/; Domain=www.nineforbrands.com.au; Expires=Sun, 21 Jun 2026 11:50:02 GMT
+x-pass-why: custom-path
+cf-cache-status: DYNAMIC
+cf-ray: a0f29f213ef15d1e-KHI
+alt-svc: h3=":443"; ma=86400
+
+---
+
+#### Response hamare saamne hai, aur yahan aaya hai **`HTTP/2 404 Not Found`**.
+
+Lekin ghaur karne wali baat yeh hai ke content-type abhi bhi **`application/json`** hai aur server `WP Engine` hi response de raha hai.
+
+---
+
+### 🔍 Is Output Ka Asal Meaning (Analysis)
+
+#### 1. REST API V2 Route Enabled Nahi Hai
+
+`404 Not Found` ka matlab yeh hai ke WordPress ka REST API toh open hai (jo hum ne pichli command mein dekha), lekin Gravity Forms ka jo **V2 REST API** route (`/wp-json/gf/v2/`) hai, woh ya toh database settings se explicitly disabled hai, ya phir unho ne un sub-routes ko rewrite rules ke zariye backend par block kiya hua hai.
+
+#### 2. Security Defense Confirm
+
+Managed WordPress hostings (jaise WP Engine) aksar commercial plugins ke sensitive API endpoints ko default tor par backend standard rules ke zariye mask ya disable kar deti hain taake automated ya unauthenticated access ko roka ja sake.
+
+---
+
+### 💡 Hacker Logic & Next Step
+
+Chunke Gravity Forms ka direct REST API rasta yahan band mil raha hai, hum yahan mazeed hit and trial mein time zaya nahi karenge. Hamare paas information gathering mein aik aur bohot solid clue mila tha: **Yoast SEO (Version 27.5)**, jo ke out-dated hai.
+
+Yoast SEO plugin ke endpoints aur un ke static scripts ke raste aksar metadata ya system information leak karne ke liye vulnerable hote hain.
+
+Chalein, Yoast SEO ka default registered REST API route check karte hain ke kya woh open hai ya us par bhi koi rewrite rule laga hua hai.
+
+Apne terminal mein yeh single command run karein:
+
+```bash
+curl -I https://www.nineforbrands.com.au/wp-json/yoast/v1/
+
+```
+
+---
+
+### 📚 Is Command Ki Detail:
+
+Hum WordPress REST API ke andar Yoast SEO ke official route **`yoast/v1/`** ka status check kar rahe hain. Is se hamein pata chalega ke kya Yoast plugin ke structural internal functions externally interactive hain ya nahi.
+
+---
+
+## 
+
