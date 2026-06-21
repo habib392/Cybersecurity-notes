@@ -302,5 +302,74 @@ Hum WordPress REST API ke andar Yoast SEO ke official route **`yoast/v1/`** ka s
 
 ---
 
-## 
+## Output
+
+(habib㉿kali)-[~]
+└─$ curl -I https://www.nineforbrands.com.au/wp-json/yoast/v1/
+HTTP/2 200 
+date: Sun, 21 Jun 2026 11:27:26 GMT
+content-type: application/json; charset=UTF-8
+server: cloudflare
+vary: Accept-Encoding
+access-control-allow-headers: Authorization, X-WP-Nonce, Content-Disposition, Content-MD5, Content-Type
+access-control-expose-headers: X-WP-Total, X-WP-TotalPages, Link
+allow: GET
+cache-control: max-age=3600, must-revalidate
+link: <https://www.nineforbrands.com.au/wp-json/>; rel="https://api.w.org/"
+x-content-type-options: nosniff
+x-powered-by: WP Engine
+x-robots-tag: noindex
+content-security-policy: frame-ancestors 'self' my.enboarder.com nine.enboarder.io;
+set-cookie: __cf_bm=NqxHbBKfo0IqX8MJ7hg3UT8bFo7p__h0uSwHfXCI.LY-1782041245.4573417-1.0.1.1-HUR2bFmrFHne6UMcQgcIOfXXM0fLedcfooMa64ujdrrAl6i7r6qwJAPhwECa2P77_s1.niBw2yy92HC_38VHUk4MkP.mYmLTErUqV6Dx7X32Ytkrk.QZJywwN3HvLIIU; HttpOnly; SameSite=None; Secure; Path=/; Domain=www.nineforbrands.com.au; Expires=Sun, 21 Jun 2026 11:57:26 GMT
+x-pass-why: custom-path
+cf-cache-status: DYNAMIC
+cf-ray: a0f2a9f818d299ec-KHI
+alt-svc: h3=":443"; ma=86400
+
+---
+
+! **`HTTP/2 200 OK`** aa gaya hai! Yoast SEO ka REST API route publicly **open** hai aur response direct JSON format (`application/json`) mein mil raha hai.
+
+Yoast SEO version **27.5** aik purana (outdated) version hai. WordPress ke REST API mein jab kisi plugin ka endpoint open mil jaye aur uska version outdated ho, toh yeh penetration testing mein aik bohot bara attack surface hota hai. Yoast SEO ke in versions mein aksar endpoints ke zariye website ke internal structures, indexing settings, aur configuration metadata leak ho jati hai jo aam user ko nazar nahi aani chahiye.
+
+---
+
+### 🔍 Is Output Ka Asal Meaning (Analysis)
+
+#### 1. Public Endpoint Accessibility (`200 OK`)
+
+Gravity Forms ka route block (`404`) tha, lekin Yoast ka route bilkul bypass ho gaya hai. Cloudflare aur WP Engine ne hamari request ko nahi roka. Iska matlab hai hum bina kisi authentication (username/password) ke Yoast ke functions aur endpoints ko query kar sakte hain.
+
+#### 2. Cache Behavior Check (`cache-control: max-age=3600`)
+
+Server header bata raha hai ke is response ka data **1 ghante (3600 seconds)** tak cache ho sakta hai. Lekin chunke `cf-cache-status: DYNAMIC` aa raha hai, iska matlab hai ke har baar request direct backend server tak ja rahi hai aur hum real-time data fetch kar rahe hain.
+
+---
+
+### 💡 Hacker Logic: Ab Yoast Ka Data Kaise Nikalein?
+
+Chunke hum ne sirf status header (`curl -I`) check kiya tha aur server ne `200 OK` diya hai, ab hamara maqsad is endpoint ke andar chupa hua **asal JSON data** nikalna hai. Yoast ka yeh endpoint hamein un saare sub-routes aur functions ki list dega jo is plugin ke andar bina login ke access kiye ja sakte hain (jaise indexing status, internal links suggestions, ya SEO analysis data).
+
+Chalein, ab header ke bajaye actual data ko read karte hain. Hum bina `-I` ke simple `curl` chalayenge aur data ko read karne ke liye `json_pp` (JSON Pretty Print) tool ka use karenge taake output saaf sutra nazar aaye.
+
+Apne terminal mein yeh single command run karein:
+
+```bash
+curl -s https://www.nineforbrands.com.au/wp-json/yoast/v1/ | json_pp | head -n 30
+
+```
+
+---
+
+### 📚 Is Command Ki Detail (Notes ke liye):
+
+* **`curl -s`**: Silent mode mein bina kisi download progress meter ke poora JSON data uthaye ga.
+* **`| json_pp`**: Pipe symbol ke baad yeh tool us messy (bikhre hue) JSON data ko ek dam sequence aur khubsoorat formatting mein tabdeel kar dega taake padhne mein aasani ho.
+* **`| head -n 30`**: Poori file bohot lambi ho sakti hai, is liye hum pehle sirf **shuru ki 30 lines** dekh kar check karenge ke kaun kaun se routes open hain.
+
+---
+
+## Output
+
+
 
