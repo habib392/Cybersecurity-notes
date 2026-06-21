@@ -445,4 +445,156 @@ Hum `head -n 100` use kar rahe hain taake Yoast API index ke andar jitne bhi int
 
 ---
 
+## Output
+
+┌──(habib㉿kali)-[~]
+└─$ curl -s https://www.nineforbrands.com.au/wp-json/yoast/v1/ | json_pp | head -n 100
+{
+   "_links" : {
+      "up" : [
+         {
+            "href" : "https://www.nineforbrands.com.au/wp-json/"
+         }
+      ]
+   },
+   "namespace" : "yoast/v1",
+   "routes" : {
+      "/yoast/v1" : {
+         "_links" : {
+            "self" : [
+               {
+                  "href" : "https://www.nineforbrands.com.au/wp-json/yoast/v1"
+               }
+            ]
+         },
+         "endpoints" : [
+            {
+               "args" : {
+                  "context" : {
+                     "default" : "view",
+                     "required" : false
+                  },
+                  "namespace" : {
+                     "default" : "yoast/v1",
+                     "required" : false
+                  }
+               },
+               "methods" : [
+                  "GET"
+               ]
+            }
+         ],
+         "methods" : [
+            "GET"
+         ],
+         "namespace" : "yoast/v1"
+      },
+      "/yoast/v1/action_tracking" : {
+         "_links" : {
+            "self" : [
+               {
+                  "href" : "https://www.nineforbrands.com.au/wp-json/yoast/v1/action_tracking"
+               }
+            ]
+         },
+         "endpoints" : [
+            {
+               "args" : {
+                  "action" : {
+                     "required" : true,
+                     "type" : "string"
+                  }
+               },
+               "methods" : [
+                  "POST"
+               ]
+            }
+         ],
+         "methods" : [
+            "POST"
+         ],
+         "namespace" : "yoast/v1"
+      },
+      "/yoast/v1/alerts/dismiss" : {
+         "_links" : {
+            "self" : [
+               {
+                  "href" : "https://www.nineforbrands.com.au/wp-json/yoast/v1/alerts/dismiss"
+               }
+            ]
+         },
+         "endpoints" : [
+            {
+               "args" : {
+                  "key" : {
+                     "required" : true
+                  }
+               },
+               "methods" : [
+                  "POST"
+               ]
+            }
+         ],
+         "methods" : [
+            "POST"
+         ],
+         "namespace" : "yoast/v1"
+      },
+      "/yoast/v1/available_posts" : {
+         "_links" : {
+            "self" : [
+               {
+                  "href" : "https://www.nineforbrands.com.au/wp-json/yoast/v1/available_posts"
+               }
+            ]
+         },
+         "endpoints" : [
+
+---
+
+#### Ab asal internal hidden routes nikal kar hamare samne aaye hain. Is `head -n 100` ke output ne website ke Yoast SEO plugin ka poora map khol diya hai.
+
+Chalein ghaur se dekhte hain ke is output mein ek penetration tester ke liye kaun se **teen (3) bare attacks surfaces** ya hidden patterns nazar aa rahe hain:
+
+---
+
+### 🔍 Is Output Ka Deep Hacker Analysis
+
+#### 1. `/yoast/v1/action_tracking` (Method: `POST`)
+
+* **Hacker Logic:** Yeh endpoint background mein website par hone wali activities ko track karne ke liye use hota hai. Yeh hum se ek argument maang raha hai: `"action" : { "required" : true, "type" : "string" }`. Chunke yeh `POST` method accept kar raha hai, agar is purane version (`27.5`) mein input sanitization ka bug hua, toh yahan backend par manipulation ki ja sakti hai.
+
+#### 2. `/yoast/v1/alerts/dismiss` (Method: `POST`)
+
+* **Hacker Logic:** Yeh admin panel ke alerts ko dismiss (khatam) karne ka endpoint hai. Yeh hum se ek mandatory argument maang raha hai: `"key" : { "required" : true }`. Agar is endpoint par access control check na laga hua, toh koi bhi bahar ka banda random keys bhej kar admin ke security ya system alerts ko bnd kar sakta hai.
+
+#### 3. `/yoast/v1/available_posts` (Bohot Interesting Endpoint!)
+
+* **Hacker Logic:** JSON yahan par cut gaya hai, lekin yeh endpoint bohot hi sensitive lag raha hai. `available_posts` ka matlab hai ke yeh website ke posts ya shayad un ke draft/private posts ki indexing ki information nikal kar deta hai. Agar hum is par request bhejein, toh ho sakta hai ke humein un posts ka data mil jaye jo publicly abhi publish bhi nahi huve!
+
+---
+
+### 💡 Hacker Approach: Authorization Check Karna
+
+WordPress REST API ke custom endpoints mein sab se bada aur aam bug **Broken Object Level Authentication (BOLA)** ya **Missing Authentication** ka hota hai. Iska matlab yeh hai ke developers route toh bana dete hain, lekin yeh check karna bhool jate hain ke request bhejne wala banda website ka Real Admin hai ya koi aam visitor.
+
+Hum sab se pehle check karenge ke kya in sensitive `POST` endpoints ko hit karne par server login maangta hai (`401 Unauthorized`), ya phir un authenticated error deta hai.
+
+Chalein, hum `/yoast/v1/action_tracking` par ek dummy data bhej kar check karte hain ke backend kya kehta hai.
+
+Apne terminal mein yeh single command run karein:
+
+```bash
+curl -X POST -d "action=test_track" https://www.nineforbrands.com.au/wp-json/yoast/v1/action_tracking
+
+```
+
+---
+
+### 📚 Is Command Ki Detail (Notes ke liye):
+
+* **`-X POST`**: Hum server ko keh rahe hain ke is baar hum data sirf dekh nahi rahe (`GET`), balkeh server par data submit karne ki koshish kar rahe hain (`POST`).
+* **`-d "action=test_track"`**: JSON ke mutabiq `action` string parameter required tha, is liye hum ne `test_track` ki dummy value bhej kar query mari hai.
+
+---
 
