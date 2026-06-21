@@ -406,6 +406,43 @@ curl -s https://www.nineforbrands.com.au/wp-json/yoast/v1/ | json_pp | head -n 3
 
 ---
 
+Jackpot! Yoast SEO ka core API schema hamare saamne open ho gaya hai. Yeh output confirm karta hai ke website ke Yoast integration ke internal structural properties publicly exposed hain.
 
+Ghaur se dekhein ke JSON response mein kya likha hai:
+
+> `"namespace" : "yoast/v1"`
+> `"routes" : { "/yoast/v1" : { ... } }`
+
+Yeh bilkul confirm information gathering data hai. Cyber security aur penetration testing mein jab koi specific custom routes leak ho rahe hon, toh hum un ke parameters ko target karte hain taake mazeed metadata ya system behaviour ka pata chal sake.
+
+---
+
+### 🔍 Is Output Ka Asal Matlab (Analysis)
+
+1. **Namespace Exposure:** Yoast plugin ka version **27.5** yahan active endpoints ke configuration parameters expose kar raha hai.
+2. **Method Arguments Visibility:** Is output mein humein saaf nazar aa raha hai ke plugin ke API rules ke mutabiq `context` parameter default tor par `"view"` mode mein chalta hai, aur is mein koi dynamic authentication ya validation strict checking default endpoint index par apply nahi hui.
+
+---
+
+### 💡 Hacker Logic: Ab Mazeed Data Kaise Nikalna Hai?
+
+Hum ne pehle sirf 30 lines dekhin taake structure confirm ho jaye. Chunke humein pata chal gaya hai ke `routes` ki chabi (key) khuli hui hai, ab hamara maqsad yeh hai ke hum **poore Yoast endpoint mapping** ko ek hi baar check karein ke is namespace (`yoast/v1`) ke andar kaun kaun se specific sub-paths (jaise get configurations, internal links metadata, ya settings tracking data) accessible hain.
+
+Hum pehle lines ki limit ko barha kar output ka baqi hissa scan karenge taake exact dynamic sub-routes ka naam pata chal sakay.
+
+Apne terminal mein ab yeh command run karein:
+
+```bash
+curl -s https://www.nineforbrands.com.au/wp-json/yoast/v1/ | json_pp | head -n 100
+
+```
+
+---
+
+### 📚 Is Command Ki Detail (Notes ke liye):
+
+Hum `head -n 100` use kar rahe hain taake Yoast API index ke andar jitne bhi internal active endpoints (routes) register hain, un ki poori list hamare samne aa jaye. Is se humein pata chalega ke is purane version (`27.5`) mein kaun sa hidden operational rasta open chuta hua hai.
+
+---
 
 
