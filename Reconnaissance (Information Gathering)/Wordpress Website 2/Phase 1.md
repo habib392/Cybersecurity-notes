@@ -133,4 +133,116 @@ assetfinder --subs-only iaggbs.com
 
 ```
 
+## Output
+
+┌──(habib㉿kali)-[~]
+└─$ assetfinder --subs-only iaggbs.com
+www.iaggbs.com
+iagchat.iaggbs.com
+iagchat.dev.iaggbs.com
+dev.iag.tenderportal.iaggbs.com
+iaggbs.com
+forum.dev.procurement.iaggbs.com
+www.procurement.iaggbs.com
+procurement.iaggbs.com
+dev.procurement.iaggbs.com
+ess.iaggbs.com
+www.dev.iag.tenderportal.iaggbs.com
+ssdd.cfs.iaggbs.com
+ssdp.cfs.iaggbs.com
+ssdq.cfs.iaggbs.com
+ssdx.cfs.iaggbs.com
+link.iaggbs.com
+forum.procurement.iaggbs.com
+iaggbs.com
+www.iaggbs.com
+ssdd.cfs.iaggbs.com
+ssdp.cfs.iaggbs.com
+ssdq.cfs.iaggbs.com
+ssdx.cfs.iaggbs.com
+iaggbs.com
+iaggbs.com
+procurement.iaggbs.com
+procurement.iaggbs.com
+dev.procurement.iaggbs.com
+dev.procurement.iaggbs.com
+iag.tenderportal.iaggbs.com
+iag.tenderportal.iaggbs.com
+dev.iag.tenderportal.iaggbs.com
+dev.iag.tenderportal.iaggbs.com
+ifcomms.cmt.procurement.iaggbs.com
+www.ifcomms.cmt.procurement.iaggbs.com
+dev.ifcomms.cmt.procurement.iaggbs.com
+www.dev.ifcomms.cmt.procurement.iaggbs.com
+iagchat.prod.iaggbs.com
+ssdd.cfs.iaggbs.com
+ssdp.cfs.iaggbs.com
+ssdq.cfs.iaggbs.com
+xxx.ssdd.cfs.iaggbs.com
+xxx.ssdp.cfs.iaggbs.com
+xxx.ssdq.cfs.iaggbs.com
+idam-nonprod-signing.iaggbs.com
+idam-signing.iaggbs.com
+cpanel.iaggbs.com
+cpcalendars.iaggbs.com
+cpcontacts.iaggbs.com
+iaggbs.com
+mail.iaggbs.com
+webdisk.iaggbs.com
+webmail.iaggbs.com
+www.iaggbs.com
+cpanel.iaggbs.com
+iaggbs.com
+mail.iaggbs.com
+webdisk.iaggbs.com
+webmail.iaggbs.com
+www.iaggbs.com
+
+---
+
+#### Yeh dekhain, ise kehte hain asli **Attack Surface Expansion**! Kahan hum sirf aik main domain `www.iaggbs.com` par phanse huve the, aur kahan `assetfinder` ne hamein poori company ka khandaan nikaal kar de diya hai.
+
+Bande ke paas jab itna zyada data aa jaye, toh expert hacker yahin par **data ki teh tak jaane** wala rule dubara lagata hai.
+
+---
+
+### 🔍 Is Data Ka Deep Analysis (Teh Tak Janna)
+
+Agar aap ghaur se is list ko dekhein, toh is mein se kuch aesi zard-khez (juicy) targets nikal rahe hain jahan bugs milne ke chances **90% barh jaate hain**:
+
+1. **Development & Staging Environments (Sab Se Khas Raste):**
+* `iagchat.dev.iaggbs.com`
+* `dev.iag.tenderportal.iaggbs.com`
+* `dev.procurement.iaggbs.com`
+* `dev.ifcomms.cmt.procurement.iaggbs.com`
+* **Hacker Logic:** Developers jab testing karte hain, toh `dev` ya `staging` subdomains par security firewalls (WAF) lagana bhool jaate hain aur purana code chorr dete hain. Yeh hamare prime targets hain.
+
+
+2. **Internal Portals & Portals (Tender/Procurement):**
+* `iag.tenderportal.iaggbs.com` (Tender portal jahan files ya bids upload hoti hain).
+* `forum.procurement.iaggbs.com` (Forums jahan log baatein karte hain - yahan XSS ke chances bohot hote hain).
+
+
+3. **Legacy/Control Panels (Old Infrastructure):**
+* `cpanel.iaggbs.com`
+* `webmail.iaggbs.com`
+* **Hacker Logic:** Yeh cPanel aur Webmail ke direct login portals hain. Agar server purana ho, toh yahan direct exploit mil sakta hai.
+
+
+
+---
+
+### 🚀 Agla Kadam: Latest Blueprint Ka Step 4 (Technology Fingerprinting)
+
+Hum ne rule banaya tha ke data dekh kar aglay step par jana hai. Ab hamare paas subdomains ki list aa gayi hai. Hamara **Step 4** tha ke hum in ki technology check karein (`whatweb`).
+
+Lekin pehle hum saare subdomains par `whatweb` chala kar terminal ko load nahi karenge, balkeh sab se pehle hum sirf **main domain** par check karenge, aur un subdomains par check karenge jo sab se unique lag rahe hain.
+
+Apne terminal mein is interesting subdomain par `whatweb` chalayein aur dekhein kya yeh bhi WordPress hai ya yahan technology badal gayi hai:
+
+```bash
+whatweb https://dev.procurement.iaggbs.com/
+
+```
+
 
