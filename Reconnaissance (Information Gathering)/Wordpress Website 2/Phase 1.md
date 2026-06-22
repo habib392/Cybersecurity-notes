@@ -375,4 +375,72 @@ whatweb --header="X-BugCrowd-traffic: habib_kali" https://forum.procurement.iagg
 
 ```
 
+## Output
+
+┌──(habib㉿kali)-[~]
+└─$ whatweb --header="X-BugCrowd-traffic: habib_kali" https://forum.procurement.iaggbs.com/
+ERROR Opening: https://forum.procurement.iaggbs.com/ - execution expired
+
+---
+
+#### Jab `whatweb` ya koi bhi tool yeh error deta hai, toh iska matlab hota hai ke tool ne website ko request bheji, lekin server ne itni der tak koi jawab nahi diya ke tool ka apna waiting time (timeout limit) khatam ho gaya.
+
+Iske peeche hacker logic ke mutabiq **do (2) baray kaaran (reasons)** ho sakte hain:
+
+1. **Firewall Blocking (WAF Action):** AWS par ho sakta hai unho ne koi aesi strict firewall lagayi ho jo scan ki tarah aane wali requests ko drop (ignore) kar deti hai, jis se scanner hang ho jata hai aur execute nahi kar pata.
+2. **Port 443 / HTTPS Specific Issue:** Ho sakta hai ke is forum ka web server hamare custom header ko is tarah process na kar paa raha ho ya HTTPS par direct connection drop ho raha ho.
+
+---
+
+### 🛠️ Data-Driven Rule: Is Block Ko Kaise Bypass/Verify Karein?
+
+Hum yahan par rasta nahi badlenge balkeh apni technology fingerprinting ki teh tak jaane ke liye ek alternative rasta nikaalenge. Agar `whatweb` block ho raha hai, toh hum bilkul simple `curl` command ke zariye direct headers check karenge taake pata chale ke response aata bhi hai ya server waqai down hai.
+
+Apne terminal mein yeh command run karein (is mein hum timeout fix kar ke sirf server ka raw data maang rahe hain):
+
+```bash
+curl -I -m 10 -H "X-BugCrowd-traffic: habib_kali" https://forum.procurement.iaggbs.com/
+
+```
+
+* **`-m 10` Kya Karega?** Yeh command ko maximum 10 seconds dega, agar 10 seconds mein response na aaya toh clear error de dega, taake aap ka terminal hang na ho.
+
+---
+
+## Output
+
+┌──(habib㉿kali)-[~]
+└─$ curl -I -m 10 -H "X-BugCrowd-traffic: habib_kali" https://forum.procurement.iaggbs.com/
+curl: (28) Connection timed out after 10000 milliseconds
+
+---
+
+#### **`Connection timed out`** ka bilkul saaf matlab samne aa gaya hai! Hamari `curl` command ne pure 10 seconds (`10000 milliseconds`) intazar kiya, lekin server ne koi response nahi diya.
+
+Jab `dig` chalane par IP mil jaye (yani DNS record zinda ho) lekin `curl` aur `whatweb` dono par connection time out ho jaye, toh iska **Hacker Logic** bohot dilchasp hota hai:
+
+---
+
+### 🔍 Is Time Out Ka Asal Matlab (Deep Analysis)
+
+1. **Firewall / Network Whitelisting:** Yeh jo `forum.procurement` subdomain hai, yeh unho ne internet par her kisi ke liye open nahi rakha hua. Yeh server zinda zaroor hai, lekin unho ne is ke aage ek strict firewall lagayi hui hai jo sirf un IPs ko allow karti hai jo un ke office ke network ki hain, ya phir un ke specific employees ki hain. Hamari IP ko woh direct drop (block) kar raha hai.
+2. **Port 80/443 Is Closed:** Ho sakta hai is IP par web traffic (`HTTP/HTTPS`) chal hi na rahi ho, balkeh yeh server kisi aur maqsad (jaise SSH file transfer ya internal database backup) ke liye use ho raha ho.
+
+---
+
+### 🛠️ Data-Driven Rule: Jab Ek Rasta Block Ho, Toh Aglay Par Kaise Jayen?
+
+Hum ne seekha tha ke hum data ko nichor kar agay barhte hain. Chunke `forum.procurement` ne hamara connection block kar diya, is raste par mazeed time zaya karne ka koi faida nahi kyunki yeh abhi bahar se accessible nahi hai.
+
+Lekin yaad hai, aap ne ek aur live target ka DNS nikaala tha? **`procurement.iaggbs.com`** jo ke AWS CloudFront ke peeche tha!
+
+Chalein, hamare blueprint ke **Step 4 (Technology Fingerprinting)** ko ab is dosray live target par apply karte hain aur dekhte hain ke kya AWS CloudFront hamari request ko server tak jaane deta hai ya nahi.
+
+Apne terminal mein ab yeh command run karein:
+
+```bash
+curl -I -m 10 -H "X-BugCrowd-traffic: habib_kali" https://procurement.iaggbs.com/
+
+```
+
 
