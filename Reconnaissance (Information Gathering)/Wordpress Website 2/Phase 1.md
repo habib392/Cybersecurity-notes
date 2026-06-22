@@ -103,5 +103,34 @@ dig iaggbs.com A +short && dig iaggbs.com MX +short
 
 ---
 
+#### Data hamare saamne hai aur is output ne pichli website ke muqable mein do (2) bohot bade aur solid haqeeqat samne laaye hain. Chalein, is data ki teh tak jaate hain aur dekhte hain ke ek expert hacker is se kya nikalta hai:
+
+---
+
+### 🔍 Is Output Ka Deep Analysis (Teh Tak Janna)
+
+#### 1. IP Address Target (`138.68.170.103`) — DigitalOcean Cloud Hosting!
+
+* **Hacker Logic:** Pichli website behind Cloudflare proxy thi, jis ki wajah se hamein us ka asli server IP nahi mil raha tha. Lekin yahan jo IP mila hai (`138.68.170.103`), yeh **DigitalOcean** ka IP range hai.
+* **Asli Server Exposed:** Iska matlab hai ke yeh website direct internet par exposed hai aur is ke aage Cloudflare ka security shield/proxy protection **nahi laga hua**! Hum direct un ke server ko hit kar rahe hain.
+
+#### 2. Mail Server (`iaggbs-com.mail.protection.outlook.com.`) — Microsoft Office 365!
+
+* **Hacker Logic:** In ka corporate email network **Microsoft Office 365 Enterprise** par chal raha hai. Iska matlab hai ke in ki internal communication bohot secure environment mein hai, lekin hamara focus abhi web application server (DigitalOcean) par hi rahega.
+
+---
+
+### 🚀 Agla Kadam: Step 3 (Subdomain Enumeration)
+
+Hum ne main domain (`iaggbs.com`) ka IP nikal liya. Lekin jaisa hum ne pehle discuss kiya tha ke expert hackers sirf main site par nahi baithte, balkeh attack surface ko phelate hain taake bugs milne ke chances barh sakein.
+
+Ab hamare latest blueprint ke mutabiq **Step 3** par chalte hain, taake is company ke baki chhupe huve subdomains ka shajra nikala ja sake.
+
+Apne terminal mein yeh command run karein:
+
+```bash
+assetfinder --subs-only iaggbs.com
+
+```
 
 
