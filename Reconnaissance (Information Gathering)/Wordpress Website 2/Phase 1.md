@@ -329,3 +329,50 @@ dig procurement.iaggbs.com A +short
 Aap pehle `forum.procurement` wali `dig` command run karein aur dekhein ke kya iska koi IP address (A record) nikalta hai ya yeh bhi dead rasta hai!
 
 ---
+
+## Outputs
+
+┌──(habib㉿kali)-[~]
+└─$ dig forum.procurement.iaggbs.com A +short
+34.248.189.5
+                                                                                                           
+┌──(habib㉿kali)-[~]
+└─$ dig procurement.iaggbs.com A +short
+d1bqwj1jrl12n6.cloudfront.net.
+
+---
+
+#### Hum ne jab `dev.procurement` par check kiya toh woh dead nikla, lekin jab aap ne in dono subdomains par `dig` chalaya, toh hamare saamne **bohot hi mazy dar aur alag kism ka data** aaya hai.
+
+Chalein, is data ki mukammal teh tak jaate hain aur dekhein ke aik professional hacker is se kya nikalta hai:
+
+---
+
+### 🔍 Is Output Ka Deep Analysis (Teh Tak Janna)
+
+#### 1. `forum.procurement.iaggbs.com` ──> **Zinda Target (Live IP: `34.248.189.5`)**
+
+* **Hacker Logic:** Yeh subdomain bilkul zinda (Live) hai! Aur iska IP address (`34.248.189.5`) **AWS (Amazon Web Services)** ka hai.
+* Remember, main website DigitalOcean par thi, lekin inka yeh forum wala section Amazon AWS par host ho raha hai. Aur sub se barh kar, is ke aage koi Cloudflare ya Cloudfront ki proxy nahi dikh rahi, direct IP exposed hai! Forums par testing karne ka maza hi alag hota hai kyunki wahan user input boxes bohot zyada hote hain jahan **XSS (Cross-Site Scripting)** ya **Stored HTML Injection** milne ke chances bohot high hote hain.
+
+#### 2. `procurement.iaggbs.com` ──> **AWS CloudFront CDN (`cloudfront.net`)**
+
+* **Hacker Logic:** Yeh target direct IP nahi de raha balkeh **AWS CloudFront** (jo ke Amazon ka ek Content Delivery Network aur caching system hai) ke peeche chhupa hua hai.
+* CloudFront aksar basic security features aur optimization ke liye use hota hai. Iska matlab hai is par direct network level attacks nahi chalenge, balkeh is par hamara focus pure web-application testing aur queries parameter par hoga.
+
+---
+
+### 🚀 Agla Kadam: Latest Blueprint Ka Step 4 (Technology Fingerprinting)
+
+Hum ne data nikal kar dead subdomains ko filter kar diya aur live targets ko alag kar liya. Ab bari hai in live targets ki technology check karne ki (`whatweb`), aur yaad rahe—**Bugcrowd Custom Header ke sath!**
+
+Chalein, hamare sequence ke mutabiq is **AWS wale Live Forum** par finger-printing karte hain.
+
+Apne terminal mein yeh command run karein (main ne aap ka custom header bilkul sahi format mein likh diya hai):
+
+```bash
+whatweb --header="X-BugCrowd-traffic: habib_kali" https://forum.procurement.iaggbs.com/
+
+```
+
+
