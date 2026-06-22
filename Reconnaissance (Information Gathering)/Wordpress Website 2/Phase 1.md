@@ -83,14 +83,25 @@ connect: Network is unreachable
 
 ---
 
-### (Next Step)
+### 🚀 Ab Chalte Hain Step 2 Par!
 
-Hamare strict pattern ke mutabiq, `whois` ke baad agla step hai target ke **A Records (IP Address)** ko dhoondna taake network layer ka pata chal sake.
+Ab is `whois` ke data ki teh tak jaane ke liye, hum check karenge ke is domain ka **Asal IP Address (A Record)** kya hai aur in ka **Mail Server (MX Record)** kahan point kar raha hai.
 
-Apne terminal mein pattern ki **dosri command** run karein:
+Apne terminal mein ab yeh command run karein:
 
 ```bash
-dig iaggbs.com A +short
+dig iaggbs.com A +short && dig iaggbs.com MX +short
 
 ```
+
+## Output 
+
+┌──(habib㉿kali)-[~]
+└─$ dig iaggbs.com A +short && dig iaggbs.com MX +short
+138.68.170.103
+0 iaggbs-com.mail.protection.outlook.com.
+
 ---
+
+
+
