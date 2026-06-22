@@ -247,5 +247,85 @@ whatweb https://dev.procurement.iaggbs.com/
 
 # According to Website Rules
 
+## Output
 
+┌──(habib㉿kali)-[~]
+└─$ whatweb --custom-header="X-BugCrowd-traffic: habib_kali" https://dev.procurement.iaggbs.com/
+/usr/bin/whatweb: unrecognized option `--custom-header=X-BugCrowd-traffic: habib_kali'
+Error in processing commandline options - unrecognized option `--custom-header=X-BugCrowd-traffic: habib_kali'
 
+---
+
+#### Yeh jo terminal par error aaya hai na, iska matlab hai ke `whatweb` ke andar `--custom-header` naam ka koi option exist hi nahi karta. Tool ne option ko pehchana nahi aur execute hone se mana kar diya.
+
+Cyber security mein jab ek tool mein custom features na hon, toh tester foran apne baqi tools ka rasta nikaalta hai. `whatweb` mein custom header lagane ke liye `--custom-header` nahi, balkeh **`-H`** ya **`--header`** ka flag istemal hota hai.
+
+Chalein, command ko sahi kar ke dubara try karte hain:
+
+```bash
+whatweb --header="X-BugCrowd-traffic: habib_kali" https://dev.procurement.iaggbs.com/
+
+```
+
+### 💡 Ek Aur Tarika (Agar `whatweb` phir bhi nakhre kare):
+
+Agar aap standard `curl` ke zariye pehle sirf is subdomain ke raw headers aur server dekhna chahte hain (jo hum ne blueprint mein seekha tha), toh `curl` mein `-H` ka flag bilkul perfectly kaam karega:
+
+```bash
+curl -I -H "X-BugCrowd-traffic: habib_kali" https://dev.procurement.iaggbs.com/
+
+```
+## Output
+                                                                                                           
+┌──(habib㉿kali)-[~]
+└─$ whatweb --header="X-BugCrowd-traffic: habib_kali" https://dev.procurement.iaggbs.com/
+ERROR Opening: https://dev.procurement.iaggbs.com/ - no address for dev.procurement.iaggbs.com
+                                                                                                           
+┌──(habib㉿kali)-[~]
+└─$ curl -I -H "X-BugCrowd-traffic: habib_kali" https://dev.procurement.iaggbs.com/
+curl: (6) Could not resolve host: dev.procurement.iaggbs.com
+
+---
+
+#### Yeh jo error aaya hai na—**`no address for dev.procurement.iaggbs.com`** aur **`Could not resolve host`**—yeh penetration testing ka aik aur bohot bara aur mazy dar sabaq hai!
+
+Iska matlab yeh nahi hai ke aap ki command ghalt hai. Command aap ne 100% sahi chalayi hai. Iska asli matlab hacker logic mein bohot gahra hai:
+
+---
+
+### 🔍 Is Error Ka Asal Matlab (Subdomain ki Teh Tak Jaana)
+
+Subdomain enumeration tools (jaise `assetfinder`) internet par majood purane records, search engines, aur archives se saare subdomains utha lete hain jo kabhi na kabhi exist karte the ya records mein hain.
+
+Lekin jab hum unhein actual hit karte hain aur error aata hai `Could not resolve host`, toh iske **do (2) matlab** hote hain:
+
+1. **Dead or Inactive Subdomain:** Yeh subdomain pehle kabhi tha, lekin ab company ne iska server delete kar diya hai ya iska DNS record khatam kar diya hai. Yani yeh rasta ab internet par zinda nahi hai.
+2. **Internal DNS / Private Network:** Yeh subdomain sirf company ke andar ke log (employees) apne private VPN ya internal office network par chala sakte hain, bahar ki dunya ke liye iska DNS public nahi kiya gaya.
+
+---
+
+### 🏁 Data-Driven Rule: Fake/Dead Subdomains Ko Kaise Filter Karein?
+
+Chunke hamare paas `assetfinder` ne bohot lambi list di hai, agar hum ek ek par manually `whatweb` chalayenge aur woh dead nikli, toh hamara bohot time zaya hoga.
+
+Expert hackers is data ki teh tak jaane ke liye pehle yeh check karte hain ke **kaun sa subdomain sach mein zinda (Live) hai aur kis ka IP address mil raha hai.**
+
+Hum wapas apne blueprint ke **Step 2 (DNS Discovery)** wale logic par aayenge aur list ke baqi unique subdomains ko check karenge jo zinda ho sakte hain. Chalein, is unique forum wale portal ko check karte hain ke kya yeh zinda hai ya dead hai:
+
+```bash
+dig forum.procurement.iaggbs.com A +short
+
+```
+
+### 🚀 Agar Yeh Bhi Dead Nikla Toh?
+
+Agar iska bhi IP na aaya (`dig` khali raha), toh hum main dashboard wale subdomain ko check karenge jo inka live portal lag raha hai:
+
+```bash
+dig procurement.iaggbs.com A +short
+
+```
+
+Aap pehle `forum.procurement` wali `dig` command run karein aur dekhein ke kya iska koi IP address (A record) nikalta hai ya yeh bhi dead rasta hai!
+
+---
