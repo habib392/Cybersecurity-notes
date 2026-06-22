@@ -245,4 +245,7 @@ whatweb https://dev.procurement.iaggbs.com/
 
 ```
 
+# According to Website Rules
+
+
 
