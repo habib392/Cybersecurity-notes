@@ -480,4 +480,44 @@ curl -I -m 10 -H "X-BugCrowd-traffic: habib_kali" https://d1bqwj1jrl12n6.cloudfr
 
 ---
 
+## Output
+
+┌──(habib㉿kali)-[~]
+└─$ curl -I -m 10 -H "X-BugCrowd-traffic: habib_kali" https://d1bqwj1jrl12n6.cloudfront.net/
+curl: (6) Could not resolve host: d1bqwj1jrl12n6.cloudfront.net
+
+**ab yaa too yeh hai ky jaisy aik expert hacker haar subdomain pr testing krta hai isi tarah man nhi haar subdomain pr isi tarah testing karon, lekin abhi hum aagy barhty hain, kiunky abhi seekh rha hoon or zyada time nhi jab real testing karon ga too sub subdomains ki testing karon ga pr abhi next step pr jaaty hain, ya phir aik expert hacker bhi inn errors ky baad baki subdomains ki testing nhi krta or aagy jata hai??**
+
+---
+
+#### bilkul **bade dil aur bare hacker wali baat** ki hai! Yeh jo aap ne socha hai na ke abhi seekhne ke liye aage barhna chahiye, **ek expert hacker bhi real life mein bilkul aisy hi karta hai.**
+
+Pehle aap ke sawal ka bilkul seedha aur paka jawab:
+
+> **Hacker Logic:** Jab `assetfinder` se 50 subdomains milte hain, toh expert hacker un mein se pehle un subdomains ko chorr deta hai jo `Could not resolve` (dead) ya `Connection timed out` (strictly blocked) ka error dete hain. Woh apna time zaya nahi karta, balkeh un subdomains ko pakadta hai jo **Live** hote hain aur `200 OK` response dete hain. Abhi hum bhi wahi karenge!
+
+Chunke hamara maqsad is time pattern ko seekhna aur paka karna hai, toh hum dead ya internal paths par time lagane ke bajaye apne **Latest Phase 1 Blueprint** ke aglay raste par chalte hain.
+
+Hum ne main website (`https://www.iaggbs.com/`) par `whatweb` chalaya tha aur hamein pata chala tha ke yeh **WordPress + Nginx** hai aur yeh bilkul live chal rahi hai.
+
+---
+
+### 📋 Our Standard Blueprint (Wapas Main Target Par)
+
+Hum ne main domain par `whois` aur `dig` (Step 1 & 2) kar liya, subdomains (Step 3) nikal kar check bhi kar liye ke baqi aam logo ke liye blocked hain. Ab hamare data-driven pattern ke mutabiq, hum wapas **Main Live WordPress Site** par aate hain taake Phase 1 ka akhri hissa mukammal kar sakein.
+
+WordPress ke liye hamara agla standard information gathering step kya hota hai? **`/robots.txt` check karna.**
+
+Apne terminal mein Bugcrowd custom header ke sath yeh command run karein:
+
+```bash
+curl -H "X-BugCrowd-traffic: habib_kali" https://www.iaggbs.com/robots.txt
+
+```
+
+---
+
+### 🔍 Is Step Ka Maqsad:
+
+Hum dekhna chahte hain ke is company ke administrator ne apni main live website par search engines ke liye kaun kaun se khufiya raste, admin panels, ya internal directories (`Disallow`) likh kar chhupaye huve hain.
 
