@@ -443,4 +443,41 @@ curl -I -m 10 -H "X-BugCrowd-traffic: habib_kali" https://procurement.iaggbs.com
 
 ```
 
+## Output
+
+┌──(habib㉿kali)-[~]
+└─$ curl -I -m 10 -H "X-BugCrowd-traffic: habib_kali" https://procurement.iaggbs.com/
+curl: (6) Could not resolve host: procurement.iaggbs.com
+
+---
+
+#### Pehle jab hum ne bina header ke `dig procurement.iaggbs.com A +short` chalaya tha, toh us ne CloudFront ka alias record (`d1bqwj1jrl12n6.cloudfront.net`) diya tha, lekin ab `curl` keh raha hai: **`Could not resolve host`**.
+
+Jab koi domain kabhi resolve ho aur aglay hi lamhe resolve hona band ho jaye, toh cyber security mein iska **Hacker Logic** bohot solid hota hai. Iske peeche do baray kaaran ho sakte hain:
+
+1. **Local DNS Cache / Terminal Glitch:** Kabhi kabhi hamara Linux terminal ya local router temporary tor par DNS queries ko resolve nahi kar paata, jis se zinda host bhi temporary `Could not resolve` dene lagta hai.
+2. **Geoblocking ya WAF Dynamic Action:** CloudFront standard tor par geoblocking ya dynamic firewalls lagata hai. Jab hum ne Bugcrowd ka header (`X-BugCrowd-traffic`) bheja, toh ho sakta hai CloudFront ke edge network ne us request ke aate hi hamari IP ke liye DNS lookup ko block ya response drop kar diya ho.
+
+---
+
+### 🏁 Data-Driven Rule: Is Block Ya Glitch Ko Kaise Verify Karein?
+
+Hum apni methodology ke mutabiq har data ko double-check karte hain taake confirm ho sake ke masla hamare network ka hai ya un ke server ka. Is ko bilkul pakka karne ke liye, hum direct un ke **CloudFront alias link** ko target karenge jo hamein `dig` ke data se mila tha!
+
+Agar un ka server zinda hai, toh CloudFront ka alias direct hit karne par hamein response zaroor dega.
+
+Apne terminal mein yeh command run karein:
+
+```bash
+curl -I -m 10 -H "X-BugCrowd-traffic: habib_kali" https://d1bqwj1jrl12n6.cloudfront.net/
+
+```
+
+### 🚀 Is Se Kya Pata Chalega?
+
+* **Agar response `200 OK` ya `403 Forbidden` aata hai:** Toh iska matlab hai server up hai, aur pehle sirf main domain ka DNS temporarliy block ya glitch ho raha tha.
+* **Agar yeh bhi time out ya resolve nahi hota:** Toh iska matlab hai ke is company ka procurement network filhal hamari side se bilkul block ya out of reach hai.
+
+---
+
 
