@@ -235,3 +235,47 @@ ffuf -u https://www.iaggbs.com/FUZZ -w /usr/share/wordlists/dirb/common.txt -H "
 * **`-fs 11820-11840` Kya Karega?** Yeh is range ke saare faltu responses ko block kar dega, aur terminal par sirf wahi cheez dikhayega jo waqai real directory hogi.
 
 ---
+
+Same error aaya phir bhi
+
+---
+
+#### Is command ko yahin chorte hain aur aage barhte hain. Directory brute-forcing ka concept aur is ke kachray (false positives) ko filter karne ka tareeqa aap ko samajh aa gaya hai, jo asal maqsad tha.
+
+Jab hum `ffuf` se directories dhoond lete hain, toh reconnaissance (recon) ka agla logical step hota hai **Vulnerability Scanning** ya **Fuzzing for Specific Files/Parameters** taake hum website ke andar kamzorian dhoond sakein.
+
+Abhi hum isi `ffuf` tool ko aik naye aur mazeed interesting tareeqay se use karenge: **File Extension Fuzzing**.
+
+---
+
+### 📂 Next Process: File Extensions Dhoondna (`-e` Flag)
+
+Kabi kabi directories ke andar ahem files chhupi hoti hain jo sirf naam se nahi miltin, un ke aage un ki extension (jaise `.php`, `.txt`, `.html`, ya `.bak`) lagana zaroori hota hai. For example, agar kisi developer ne ghalti se backup file chhor di ho (`config.bak` ya `db.php`), toh woh hamein bohot bada access de sakti hai.
+
+Hum `ffuf` ko bolenge ke wordlist ke har lafzh ke aage yeh extensions laga kar check kare.
+
+Aap terminal par yeh naya command run karein:
+
+```bash
+ffuf -u https://www.iaggbs.com/FUZZ -w /usr/share/wordlists/dirb/common.txt -H "X-BugCrowd-traffic: habib_kali" -e .php,.txt,.html,.bak -mc 200,301,302 -ac
+
+```
+
+---
+
+### 🔬 Is Command Ki Teh Tak Jaate Hain:
+
+Hum ne purani command mein sirf aik naya flag add kiya hai:
+
+* **`-e .php,.txt,.html,.bak`**: Yeh `ffuf` ko batata hai ke agar wordlist mein lafzh hai `secret`, toh woh sirf `secret` check nahi karega, balki yeh charo cheezain check karega:
+1. `secret.php`
+2. `secret.txt`
+3. `secret.html`
+4. `secret.bak`
+
+
+
+> 💡 **Tip:** Hum ne `-ac` ko sath rakha hai taake agar is extension search mein bhi wildcard/fake responses aayein, toh terminal unhein khud hi filter out kar de.
+
+
+
