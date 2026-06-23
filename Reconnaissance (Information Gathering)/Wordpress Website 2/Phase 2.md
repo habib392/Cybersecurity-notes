@@ -273,9 +273,203 @@ Hum ne purani command mein sirf aik naya flag add kiya hai:
 3. `secret.html`
 4. `secret.bak`
 
+---
+
+## Output
 
 
-> 💡 **Tip:** Hum ne `-ac` ko sath rakha hai taake agar is extension search mein bhi wildcard/fake responses aayein, toh terminal unhein khud hi filter out kar de.
+
+
+
+
+---
+
+#### Terminal mein **Subdomain Enumeration** shuru karte hain. Yeh web path se bilkul alag cheez hai.
+
+Is ka maqsad yeh hai ke hum check karein ke `iaggbs.com` ke aage kya koi aur chhupi hui websites hain? Jaise `admin.iaggbs.com`, `test.iaggbs.com`, ya `dev.iaggbs.com`. Aksar main website bohot secure hoti hai, lekin subdomains par developer purana code chhor dete hain jahan aasani se vulnerabilities mil jati hain.
+
+Kali Linux mein is kaam ke liye aik bohot hi tez aur advance tool hai jis ka naam hai **`subfinder`**.
+
+---
+
+### 🚀 Naya Process: Subdomain Enumeration
+
+Aap aik **Naya Terminal Tab ya Window** (`Ctrl + Shift + T`) kholein aur wahan yeh command run karein:
+
+```bash
+subfinder -d iaggbs.com -v
+
+```
+
+### 🔬 Is Command Mein Kya Ho Raha Hai?
+
+* **`subfinder`**: Yeh tool bina website ko hit kiye (passively) dunya bhar ke internet records aur search engines se is domain ke saare subdomains nikal leta hai. Yeh bohot fast hai!
+* **`-d iaggbs.com`**: Is ka matlab hai "Domain". Hum apna target domain bata rahe hain.
+* **`-v`**: Verbose mode, taake hamein live screen par nazar aaye ke yeh kahan kahan dhoond raha hai.
+
+---
+
+## Output
+
+┌──(habib㉿kali)-[~]
+└─$ subfinder -d iaggbs.com -v
+
+               __    _____           __         
+   _______  __/ /_  / __(_)___  ____/ /__  _____
+  / ___/ / / / __ \/ /_/ / __ \/ __  / _ \/ ___/
+ (__  ) /_/ / /_/ / __/ / / / / /_/ /  __/ /    
+/____/\__,_/_.___/_/ /_/_/ /_/\__,_/\___/_/
+
+		projectdiscovery.io
+
+[INF] Current subfinder version v2.14.0 (latest)
+[INF] Loading provider config from /home/habib/.config/subfinder/provider-config.yaml
+[DBG] Selected source(s) for this search: bevigil, c99, certspotter, dnsrepo, onyphe, redhuntlabs, anubis, crtsh, fofa, fullhunt, leakix, alienvault, driftnet, profundis, quake, reconeer, rsecloud, thc, censys, chaos, domainsproject, intelx, digitalyama, securitytrails, chinaz, shodan, urlscan, builtwith, digitorus, dnsdumpster, robtex, virustotal, bufferover, hackertarget, whoisxmlapi, windvane, submd
+
+[submd] cpanel.iaggbs.com
+[submd] dev.ifcomms.cmt.procurement.iaggbs.com
+[submd] dev.procurement.iaggbs.com
+[submd] ess.iaggbs.com
+[submd] forum.dev.procurement.iaggbs.com
+[submd] forum.procurement.iaggbs.com
+[submd] iagchat.iaggbs.com
+[submd] iagchat.dev.iaggbs.com
+[submd] idam-nonprod-signing.iaggbs.com
+[submd] idam-signing.iaggbs.com
+[submd] ifcomms.cmt.procurement.iaggbs.com
+[submd] link.iaggbs.com
+[submd] mail.iaggbs.com
+[submd] procurement.iaggbs.com
+[submd] ssdd.cfs.iaggbs.com
+[submd] ssdp.cfs.iaggbs.com
+[submd] ssdq.cfs.iaggbs.com
+[submd] ssdx.cfs.iaggbs.com
+[submd] webdisk.iaggbs.com
+[submd] webmail.iaggbs.com
+[submd] www.iaggbs.com
+[submd] www.dev.ifcomms.cmt.procurement.iaggbs.com
+[submd] www.ifcomms.cmt.procurement.iaggbs.com
+[hackertarget] ssdd.cfs.iaggbs.com
+[hackertarget] ssdp.cfs.iaggbs.com
+[hackertarget] ssdq.cfs.iaggbs.com
+[hackertarget] ssdx.cfs.iaggbs.com
+[hackertarget] link.iaggbs.com
+[hackertarget] forum.dev.procurement.iaggbs.com
+[hackertarget] forum.procurement.iaggbs.com
+[crtsh] www.iaggbs.com
+[crtsh] iagchat.iaggbs.com
+[crtsh] forum.procurement.iaggbs.com
+[crtsh] forum.dev.procurement.iaggbs.com
+[crtsh] iagchat.dev.iaggbs.com
+[crtsh] ssdd.cfs.iaggbs.com
+[crtsh] ssdp.cfs.iaggbs.com
+[crtsh] ssdq.cfs.iaggbs.com
+[crtsh] ssdx.cfs.iaggbs.com
+[crtsh] link.iaggbs.com
+[crtsh] procurement.iaggbs.com
+[crtsh] dev.procurement.iaggbs.com
+[crtsh] ess.iaggbs.com
+[crtsh] iag.tenderportal.iaggbs.com
+[crtsh] dev.iag.tenderportal.iaggbs.com
+[crtsh] ifcomms.cmt.procurement.iaggbs.com
+[crtsh] www.ifcomms.cmt.procurement.iaggbs.com
+[crtsh] dev.ifcomms.cmt.procurement.iaggbs.com
+[crtsh] www.dev.ifcomms.cmt.procurement.iaggbs.com
+[crtsh] iagchat.prod.iaggbs.com
+[crtsh] xxx.ssdd.cfs.iaggbs.com
+[crtsh] xxx.ssdp.cfs.iaggbs.com
+[crtsh] xxx.ssdq.cfs.iaggbs.com
+[crtsh] idam-nonprod-signing.iaggbs.com
+[crtsh] idam-signing.iaggbs.com
+[crtsh] cpanel.iaggbs.com
+[crtsh] cpcalendars.iaggbs.com
+[crtsh] cpcontacts.iaggbs.com
+[crtsh] mail.iaggbs.com
+[crtsh] webdisk.iaggbs.com
+[crtsh] webmail.iaggbs.com
+webmail.iaggbs.com
+www.dev.ifcomms.cmt.procurement.iaggbs.com
+dev.iag.tenderportal.iaggbs.com
+iag.tenderportal.iaggbs.com
+xxx.ssdq.cfs.iaggbs.com
+iagchat.dev.iaggbs.com
+cpanel.iaggbs.com
+idam-signing.iaggbs.com
+webdisk.iaggbs.com
+ess.iaggbs.com
+dev.procurement.iaggbs.com
+ssdp.cfs.iaggbs.com
+iagchat.iaggbs.com
+procurement.iaggbs.com
+dev.ifcomms.cmt.procurement.iaggbs.com
+cpcalendars.iaggbs.com
+cpcontacts.iaggbs.com
+www.iaggbs.com
+idam-nonprod-signing.iaggbs.com
+mail.iaggbs.com
+iagchat.prod.iaggbs.com
+xxx.ssdp.cfs.iaggbs.com
+ssdq.cfs.iaggbs.com
+forum.procurement.iaggbs.com
+xxx.ssdd.cfs.iaggbs.com
+ssdd.cfs.iaggbs.com
+ssdx.cfs.iaggbs.com
+link.iaggbs.com
+forum.dev.procurement.iaggbs.com
+ifcomms.cmt.procurement.iaggbs.com
+www.ifcomms.cmt.procurement.iaggbs.com
+[INF] Found 31 subdomains for iaggbs.com in 21 seconds 646 milliseconds
+
+---
+
+#### 21 seconds mein **31 subdomains** dhoond nikale hain.
+
+Aap ke terminal output mein agar hum ghaur karein, toh shuru mein jo bohot saara kachra (API errors) aa raha tha, usay ignore maren—woh is liye tha kyunki hum ne premium API keys configure nahi ki thin. Lekin uske bawajood, jo free sources thin (jaise `thc`, `submd`, `hackertarget`, aur `crtsh`), unhon ne kamaal kar diya.
+
+Niche jo 31 subdomains ki list aayi hai, us mein se **kuch bohot hi high-value aur interesting targets** nazar aa rahe hain jo aik penetration tester ke liye sone ki khaan (goldmine) hote hain:
+
+### 🔎 Ahem Targets Jo Samne Aaye Hain:
+
+1. **Development & Testing:**
+* `iagchat.dev.iaggbs.com`
+* `dev.procurement.iaggbs.com`
+* `forum.dev.procurement.iaggbs.com`
+* `dev.iag.tenderportal.iaggbs.com`
+*(Developers aksar `dev.` ya testing subdomains par security lagaana bhool jaate hain ya purana code chhor dete hain).*
+
+
+2. **Portals & Port Chhupane Wali Jaghein:**
+* `cpanel.iaggbs.com` (Control Panel login)
+* `webmail.iaggbs.com` & `mail.iaggbs.com` (Email infrastructure)
+* `iag.tenderportal.iaggbs.com` (Tender portal, jahan financial documents ya file uploads ho sakte hain).
+
+
+3. **Ajeeb/Hidden Subdomains:**
+* `xxx.ssdq.cfs.iaggbs.com` (Yeh triple subdomains kafi deep hain, inko check karna banta hai).
+
+
+
+---
+
+### 🛠️ Next Step: In Subdomains Ka Kya Karein?
+
+Abhi hamare paas sirf subdomains ke **naatay** (names) aaye hain. Hamein nahi pata ke in 31 mein se kaun kaun se subdomains **waqai is waqt live/active** hain aur chal rahe hain, kyunki kuch purane ya dead bhi ho sakte hain.
+
+In sab ko aik aik kar ke browser mein check karna bohot boring aur time-taking kaam hai. Toh hum kya karenge? Kali Linux mein aik aur zabardast aur fast tool use karenge jo yeh check karega ke **kaun sa subdomain live hai (HTTP 200 ya 301 de raha hai)**.
+
+Us tool ka naam hai **`httpx`** (ya `httprobe`).
+
+Pehle aap is subdomain ki list ko aik file mein save karlein taake hum agla process shuru kar sakein. Usi terminal mein yeh command run karein jo in subdomains ko seedha aik text file mein save kar degi:
+
+```bash
+subfinder -d iaggbs.com -o subdomains.txt
+
+```
+
+*(Yeh command silent chalegi aur saare subdomains ko `subdomains.txt` naam ki file mein daal degi).*
+
+---
+
 
 
 
