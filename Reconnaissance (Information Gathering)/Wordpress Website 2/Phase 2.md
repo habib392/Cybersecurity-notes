@@ -470,6 +470,95 @@ subfinder -d iaggbs.com -o subdomains.txt
 
 ---
 
+Ab agla step yeh hai ke hum check karein ke in 31 subdomains mein se **kaun kaun se waqai is waqt live (active) hain**, taake hum apna waqt dead links par zaya na karein. Is kaam ke liye hum **`httpx`** tool use karenge, jo bohot fast hai aur live websites ko filter out kar deta hai.
+
+Aap usi terminal mein yeh command run karein:
+
+```bash
+httpx -l subdomains.txt -title -tech-detect -status-code -o live_subs.txt
+
+```
+
+---
+
+### 🔬 Is Command Mein Kya Ho Raha?
+
+* **`-l subdomains.txt`**: Yeh hamari banayi hui list ko input le raha hai.
+* **`-title`**: Yeh har live subdomain ka web title (jaise "Login Page" ya "Dashboard") nikal kar dikhayega.
+* **`-tech-detect`**: Yeh website ke peeche chalne wali technology (jaise WordPress, Apache, PHP, ya Cloudflare) dhoond nikalega.
+* **`-status-code`**: Yeh batayega ke HTTP response kya hai (`200 OK`, `301 Redirect`, ya `403 Forbidden`).
+* **`-o live_subs.txt`**: Yeh saare live aur kaam ke results ko aik nayi file `live_subs.txt` mein save kar dega.
+
+---
+
+## Output
+
+┌──(habib㉿kali)-[~/Documents/Reconnassiance]
+└─$ httpx -l subdomains.txt -title -tech-detect -status-code -o live_subs.txt
+Usage: httpx [OPTIONS] URL
+
+Error: No such option: -l
+
+---
+
+#### Kali Linux mein ProjectDiscovery wala `httpx` install nahi hai, balki Python wala standard `httpx` library ka CLI install hai, jo sirf aik single URL leta hai aur is tarah ke flags (`-l`, `-title`) ko nahi samajhta.
+
+Chalein, koi masla nahi! Hum standard Linux tools aur `curl` ka aik chota sa loop bana kar khud hi apna desi "Live Subdomain Checker" chala lete hain, bina kisi naye tool ke jhanjhat ke.
+
+Usi terminal mein yeh poori command copy-paste kar ke Enter maro:
+
+```bash
+while read sub; do curl -s -o /dev/null -w "%{http_code} %{url_effective}\n" "https://$sub" --connect-timeout 3; done < subdomains.txt | grep -E "^(200|301|302|403)" | tee live_subs.txt
+
+```
+
+### 🔬 Yeh Desi Command Kya Kar Rahi Hai?
+
+1. **`while read sub; do ... done < subdomains.txt`**: Yeh `subdomains.txt` file mein se aik aik kar ke saare 31 subdomains ko uthayegi.
+2. **`curl -s -o /dev/null -w "... %{url_effective}\n"`**: Yeh background mein har subdomain par request bhejegi aur screen par kachra dikhane ke bajaye sirf us ka **Status Code** aur **URL** print karegi.
+3. **`--connect-timeout 3`**: Agar koi subdomain dead hai, toh yeh sirf 3 seconds wait karegi aur aage barh jayegi (taake waqt zaya na ho).
+4. **`grep -E "^(200|301|302|403)"`**: Yeh sirf un subdomains ko screen par layegi jo active hain (chahe access ho ya redirection ya 403 Forbidden).
+5. **`tee live_subs.txt`**: Yeh results ko terminal par bhi dikhayegi aur sath hi sath `live_subs.txt` file mein save bhi karti jayegi.
+
+---
+
+## Output
+
+Hamara desi script perfect kaam kar gaya aur is ne kachra links ko filter out kar ke **3 live subdomains** dhoond nikale hain:
+
+```text
+403 https://ssdq.cfs.iaggbs.com/
+403 https://ssdd.cfs.iaggbs.com/
+403 https://ssdp.cfs.iaggbs.com/
+
+```
+
+### 🔬 In Results Ka Kya Matlab Hai? (The Hacker's Perspective)
+
+Teeno targets par **`403 Forbidden`** status code aa raha hai. Aik aam banda sochega ke *"Yaar yeh toh block hain, yahan kuch nahi milne wala."* Lekin aik penetration tester ke liye yeh aik bohot interesting situation hoti hai:
+
+1. **Website Live Hai:** `403` ka matlab hai ke server active hai aur hamari request ko responsive hai (agar server down hota toh code `000` ya timeout aata).
+2. **Access Restricted Hai:** Server keh raha hai ke *"Aap ko is directory ya page ko dekhne ki ijaazat nahi hai."* 3. **Peeche Kuch Chhupa Hai:** Aksar `403 Forbidden` tab aata hai jab main directory listing band ho, lekin us ke andar ahem files ya administrative panels (jaise `/admin`, `/login`, `/config.php`) maujood hon jin tak direct ijaazat na ho.
+
+---
+
+### 🛠️ Next Process: "403 Bypass" Aur Directory Fuzzing
+
+Ab hum in teeno mein se kisi aik target ko pakar kar us ke andar chhupi hui files dhoondne ki koshish karenge. Kyun ke `ffuf` par hum pehle hi kafi kaam kar chuke hain, ab hum Kali Linux ka sab se mashhoor aur pyara tool use karenge: **`dirb`** ya **`dirbuster`** (CLI version).
+
+Chalein, pehle target (`ssdq.cfs.iaggbs.com`) par attack karte hain yeh dekhne ke liye ke kya is restricted portal ke andar koi khula hua rasta milta hai ya nahi.
+
+Aap terminal par yeh command run karein:
+
+```bash
+dirb https://ssdq.cfs.iaggbs.com/ /usr/share/wordlists/dirb/common.txt -H "X-BugCrowd-traffic: habib_kali"
+
+```
+
+### 💡 Is Command Mein Naya Kya Hai?
+
+* **`dirb`**: Yeh Kali Linux ka built-in directory brute-forcing tool hai. Yeh thoda simple hai aur is ka output dekhna aur samajhna kafi aasan hota hai.
+* Yeh check karega ke kya `https://ssdq.cfs.iaggbs.com/` ke aage koi aisa page hai (jaise `/index.html` ya `/login`) jo `403` ke bajaye direct `200 OK` de de.
 
 
 
